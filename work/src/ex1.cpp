@@ -15,6 +15,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/euler_angles.hpp"
 
+
+
 void Application::init() {
     // Load the shader program
     // The use of CGRA_SRCDIR "/path/to/shader" is so you don't
@@ -53,23 +55,23 @@ void Application::createCube() {
     vertices.setRow(4, { 1.0, 1.0,  -1.0 });
     vertices.setRow(5, { -1.0, -1.0,  -1.0 });
 
-    vertices.setRow(6, { -1.0, -1.0,  -1.0 });
-    vertices.setRow(7, { 1.0, -1.0,  -1.0 });
+    vertices.setRow(6, { 1.0, -1.0,  -1.0 });
+    vertices.setRow(7, { -1.0, 1.0,  -1.0 });
 
     // Remember to make sure that the order of the vertices
     // is counter-clockwise when looking at the front of the
     // triangle.
     triangles.setRow(0, { 0, 1, 2 });
     triangles.setRow(1, { 0, 3, 1 });
-    triangles.setRow(2, { 4, 5, 6 });
-    triangles.setRow(3, { 4, 7, 5 });
+    triangles.setRow(2, { 4, 6, 5 });
+    triangles.setRow(3, { 4, 5, 7 });
     triangles.setRow(4, { 0, 2, 6 });
     triangles.setRow(5, { 0, 6, 4 });
-    triangles.setRow(6, { 3, 1, 5 });
-    triangles.setRow(7, { 3, 5, 7 });
-    triangles.setRow(8, { 0, 3, 7 });
-    triangles.setRow(9, { 0, 7, 4 });
-    triangles.setRow(10, { 2, 3, 5 });
+    triangles.setRow(6, { 3, 5, 1 });
+    triangles.setRow(7, { 3, 7, 5 });
+    triangles.setRow(8, { 0, 7, 3 });
+    triangles.setRow(9, { 0, 4, 7 });
+    triangles.setRow(10, { 2, 1, 5 });
     triangles.setRow(11, { 2, 5, 6 });
 
     m_mesh.setData(vertices, triangles);
@@ -125,7 +127,6 @@ void Application::drawScene() {
 
     glm::mat4 modelTransform(1.0f);
 
-
     /************************************************************
      * 3. Manual Transforms                                     *
      *                                                          *
@@ -136,7 +137,31 @@ void Application::drawScene() {
      *    `glm::scale`                                          *
      ************************************************************/
 
-    m_rotationMatrix = glm::mat3();
+    static bool show_app_manualtransforms = false;
+
+    static glm::vec3 manrotate;
+
+   // ImGui::Begin("Manual Transforms",&show_app_manualtransforms,ImVec2(250,200),1.f,0);
+    ImGui::Begin("Manual Transforms",&show_app_manualtransforms,ImVec2(250,200));
+    //ImGui::Begin("Manual Transforms");
+
+    ImGui::SliderFloat3("Translate",&m_translation[0],-100.0f,100.0f, "%.5f",1.5f);
+    ImGui::SliderFloat("Scale",&m_scale,-100.0f,100.0f, "%.5f", 1.5f);
+    ImGui::SliderFloat3("Rotate",&manrotate[0],-M_PI,M_PI, "%.5f", 1.0f);
+    ImGui::End();
+
+    //modelTransform *= glm::scale(modelTransform,glm::vec3(m_scale));
+
+
+    glm::mat4 rot4 = glm::rotate(glm::mat4(1.0),manrotate.z,glm::vec3(0,0,1));
+    rot4 = glm::rotate(rot4,manrotate.y,glm::vec3(0,1,0));
+    rot4 = glm::rotate(rot4,manrotate.x,glm::vec3(1,0,0));
+
+
+    modelTransform *= rot4;
+
+    modelTransform *= glm::translate(glm::mat4(),m_translation);
+
     m_program.setModelMatrix(modelTransform);
 
     // Draw the mesh
