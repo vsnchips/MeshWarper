@@ -89,6 +89,8 @@ iostream
 -
 stdexcept
 -
+cstring
+-
 opengl.hpp
 /home/shelly/mount/Hotprog/CGRA/a1/work/src/opengl.hpp
 imgui.h

@@ -2,6 +2,8 @@
 #include <cmath>
 #include <iostream>
 #include <stdexcept>
+#include <cstring>
+
 
 #include "opengl.hpp"
 #include "imgui.h"
@@ -14,7 +16,6 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/euler_angles.hpp"
-
 
 
 void Application::init() {
@@ -145,12 +146,10 @@ void Application::drawScene() {
     ImGui::Begin("Manual Transforms",&show_app_manualtransforms,ImVec2(250,200));
     //ImGui::Begin("Manual Transforms");
 
-    ImGui::SliderFloat3("Translate",&m_translation[0],-100.0f,100.0f, "%.5f",1.5f);
-    ImGui::SliderFloat("Scale",&m_scale,-100.0f,100.0f, "%.5f", 1.5f);
+    ImGui::SliderFloat3("Translate",&m_translation[0],-10.0f,10.0f, "%.5f",1.5f);
+    ImGui::SliderFloat("Scale",&m_scale,-5.0f,5.0f, "%.5f", 1.5f);
     ImGui::SliderFloat3("Rotate",&manrotate[0],-M_PI,M_PI, "%.5f", 1.0f);
     ImGui::End();
-
-    //modelTransform *= glm::scale(modelTransform,glm::vec3(m_scale));
 
 
     glm::mat4 rot4 = glm::rotate(glm::mat4(1.0),manrotate.z,glm::vec3(0,0,1));
@@ -158,9 +157,12 @@ void Application::drawScene() {
     rot4 = glm::rotate(rot4,manrotate.x,glm::vec3(1,0,0));
 
 
-    modelTransform *= rot4;
 
     modelTransform *= glm::translate(glm::mat4(),m_translation);
+    modelTransform *= glm::scale(modelTransform,glm::vec3(m_scale));
+
+    modelTransform *= rot4;
+
 
     m_program.setModelMatrix(modelTransform);
 
@@ -190,13 +192,107 @@ void Application::doGUI() {
      * 5. Add a checkbox for rendering the object in wireframe  *
      *  mode.                                                   *
      ************************************************************/
+    static char dragon[] = "../../meshes/stanford_dragon/dragon.obj";
+
+    static char path[256];
+
+    if (std::strlen(path)<1) std::strcpy(path,dragon);
+
+    if (ImGui::InputText("Load *.OBJ",path, 256)){
+
+        FILE * file = fopen(path, "r");
+        if( file == NULL ){
+            printf("Impossible to open the file !\n");
+            //return false;
+        }else {
+            printf("Loading %s \n", path);
+
+            /*cgra::Wavefront loadmesh;
+
+            try {
+                loadmesh = cgra::Wavefront::load(path);
+            } catch (std::exception e) {
+                printf( "\nLoading failed : %s \n", e.what());
+            }*/
+
+            std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
+            std::vector< double > temp_vertices;
+            std::vector< double > temp_uvs;
+            std::vector< double > temp_normals;
+
+            while( 1 ){
+
+                char lineHeader[128];
+                // read the first word of the line
+                int res = fscanf(file, "%s", lineHeader);
+                if (res == EOF)
+                    break;
+
+            if ( strcmp( lineHeader, "v" ) == 0 ){
+                float vertexx;
+                float vertexy;
+                float vertexz;
+                fscanf(file, "%f %f %f\n", &vertexx, &vertexy, &vertexz );
+                temp_vertices.push_back(vertexx);
+                temp_vertices.push_back(vertexy);
+                temp_vertices.push_back(vertexz);
+            }else if ( strcmp( lineHeader, "vt" ) == 0 ){
+                float uvx;
+                float uvy;
+                fscanf(file, "%f %f\n", &uvx, &uvy );
+                temp_uvs.push_back(uvx);
+                temp_uvs.push_back(uvy);
+            }else if ( strcmp( lineHeader, "vn" ) == 0 ){
+                float normalx;
+                float normaly;
+                float normalz;
+                fscanf(file, "%f %f %f\n", &normalx, &normaly, &normalz );
+                temp_normals.push_back(normalx);
+                temp_normals.push_back(normaly);
+                temp_normals.push_back(normalz);
+
+            }else if ( strcmp( lineHeader, "f" ) == 0 ){
+                std::string vertex1, vertex2, vertex3;
+                unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+                //int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
+                int matches = fscanf(file, "%u %u %u\n", &vertexIndex[0], &vertexIndex[1], &vertexIndex[2]);
+                if (matches != 3){
+                    printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+                   // return false;
+                }
+                vertexIndices.push_back(vertexIndex[0]);
+                vertexIndices.push_back(vertexIndex[1]);
+                vertexIndices.push_back(vertexIndex[2]);
+                uvIndices    .push_back(uvIndex[0]);
+                uvIndices    .push_back(uvIndex[1]);
+                uvIndices    .push_back(uvIndex[2]);
+                normalIndices.push_back(normalIndex[0]);
+                normalIndices.push_back(normalIndex[1]);
+                normalIndices.push_back(normalIndex[2]);
+            }
+
+
+        }
+
+            cgra::Matrix<double> verts(temp_vertices.size()/3,3);
+            for(unsigned int i =0; i < temp_vertices.size()/3; i++) verts.setRow(i,{temp_vertices[i*3],temp_vertices[i*3+1],temp_vertices[i*3+2]});
+
+            cgra::Matrix<unsigned int> faces(vertexIndices.size()/3,3);
+            for(unsigned int i=0; i< vertexIndices.size()/3;i++) faces.setRow(i,{vertexIndices[i*3]-1,vertexIndices[i*3+1]-1,vertexIndices[i*3+2]-1});
+            m_mesh.setData(verts,faces);
+
+
+     } //endif loading
+    }//endif textinput
 
     // Example for rotation, use glm to create a a rotation
     // matrix from this vector
-    static glm::vec3 rotation(0, 0, 0);
+
+
+    /*static glm::vec3 rotation(0, 0, 0);
     if (ImGui::InputFloat3("Rotation", &rotation[0])) {
         // This block is executed if the input changes
-    }
+    }*/
 
     ImGui::End();
 }
