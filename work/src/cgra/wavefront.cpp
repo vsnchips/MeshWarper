@@ -26,7 +26,7 @@ namespace cgra {
         std::ifstream file(filename, std::ios::in);
         if (!file.is_open()) {
             throw std::runtime_error("Error: could not open file for reading");
-        }
+        } else std::cout << "\nfile open";
 
         std::string line;
         std::string mode;

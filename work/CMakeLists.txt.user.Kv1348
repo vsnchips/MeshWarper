@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.3.1, 2017-08-11T18:55:23. -->
+<!-- Written by QtCreator 4.3.1, 2017-08-11T20:03:54. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -341,7 +341,7 @@
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguation.Title">a1</value>
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.Arguments"></value>
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.UserWorkingDirectory"></value>
-    <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.UserWorkingDirectory.default">/tmp/QtCreator-o3qt6y/qtc-cmake-XX1uOp11/src</value>
+    <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.UserWorkingDirectory.default">/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/src</value>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">a1</value>

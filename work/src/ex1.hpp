@@ -25,9 +25,11 @@ public:
     // The scale of the mesh
     float m_scale;
 
-    // A 3x3 matrix representing the rotation of the
-    // mesh
-    glm::mat3 m_rotationMatrix;
+    // A 4x4 matrix representing the rotation of the
+    // mesh,
+    // And a vec3 with the z/y/x/ coords.
+    glm::vec3 manrotate;
+    glm::mat4 m_rotationMatrix;
 
     // Whether or not the left, middle or right buttons are down.
     bool m_mouseButtonDown[3];

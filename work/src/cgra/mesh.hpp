@@ -21,6 +21,8 @@ namespace cgra {
                 m_position(pos), m_normal(norm) { }
         };
 
+
+    public:
         // A list of all the vertices in the mesh
         std::vector<Vertex> m_vertices;
         // A list of indices into m_vertices.
@@ -52,7 +54,6 @@ namespace cgra {
         // that represent triangles
         GLuint m_ibo;
 
-    public:
 
         // Set the mesh data using two Matrices.
         //

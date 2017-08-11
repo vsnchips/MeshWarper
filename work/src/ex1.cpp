@@ -98,19 +98,24 @@ void Application::loadObj(const char *filename) {
      ************************************************************/
 
     // Replace these with appropriate values
-    unsigned int numVertices  = 0;
-    unsigned int numTriangles = 0;
+    int numVertices  = obj.m_positions.size();
+    int numTriangles = obj.m_faces.size();
+    printf("\nVerts %u, Tris %u,\n", numVertices, numTriangles);
 
     cgra::Matrix<double> vertices(numVertices, 3);
     cgra::Matrix<unsigned int> triangles(numTriangles, 3);
 
     for (size_t i = 0; i < obj.m_positions.size(); i++) {
         // Add each position to the vertices matrix
+        for(int i = 1; i <= numVertices;i++) vertices.setRow(i-1,{obj.position(i).x,obj.position(i).y,obj.position(i).z});
     }
 
     for (size_t i = 0; i < obj.m_faces.size(); i++) {
         // Add each triangle's indices to the triangles matrix
         // Remember that Wavefront files use indices that start at 1
+        for(int i = 0; i < numTriangles;i++) triangles.setRow(i,{obj.m_faces[i].m_vertices[0].m_p-1,
+                                                                 obj.m_faces[i].m_vertices[1].m_p-1,
+                                                                 obj.m_faces[i].m_vertices[2].m_p-1});
     }
 
     m_mesh.setData(vertices, triangles);
@@ -140,8 +145,6 @@ void Application::drawScene() {
 
     static bool show_app_manualtransforms = false;
 
-    static glm::vec3 manrotate;
-
    // ImGui::Begin("Manual Transforms",&show_app_manualtransforms,ImVec2(250,200),1.f,0);
     ImGui::Begin("Manual Transforms",&show_app_manualtransforms,ImVec2(250,200));
     //ImGui::Begin("Manual Transforms");
@@ -152,16 +155,14 @@ void Application::drawScene() {
     ImGui::End();
 
 
-    glm::mat4 rot4 = glm::rotate(glm::mat4(1.0),manrotate.z,glm::vec3(0,0,1));
-    rot4 = glm::rotate(rot4,manrotate.y,glm::vec3(0,1,0));
-    rot4 = glm::rotate(rot4,manrotate.x,glm::vec3(1,0,0));
-
-
+    m_rotationMatrix = glm::rotate(glm::mat4(1.0),manrotate.z,glm::vec3(0,0,1));
+    m_rotationMatrix = glm::rotate(m_rotationMatrix,manrotate.y,glm::vec3(0,1,0));
+    m_rotationMatrix = glm::rotate(m_rotationMatrix,manrotate.x,glm::vec3(1,0,0));
 
     modelTransform *= glm::translate(glm::mat4(),m_translation);
     modelTransform *= glm::scale(modelTransform,glm::vec3(m_scale));
 
-    modelTransform *= rot4;
+    modelTransform *= m_rotationMatrix;
 
 
     m_program.setModelMatrix(modelTransform);
@@ -192,6 +193,12 @@ void Application::doGUI() {
      * 5. Add a checkbox for rendering the object in wireframe  *
      *  mode.                                                   *
      ************************************************************/
+    static bool wireframe;
+    if(ImGui::Button("WireFrame ?")) {
+        wireframe = !wireframe;
+        m_mesh.setDrawWireframe(wireframe);
+}
+
     static char dragon[] = "../../meshes/stanford_dragon/dragon.obj";
 
     static char path[256];
@@ -207,13 +214,9 @@ void Application::doGUI() {
         }else {
             printf("Loading %s \n", path);
 
-            /*cgra::Wavefront loadmesh;
+            //loadObj(path);   // The CGRA wavefront loader isnt working for me
 
-            try {
-                loadmesh = cgra::Wavefront::load(path);
-            } catch (std::exception e) {
-                printf( "\nLoading failed : %s \n", e.what());
-            }*/
+            // So I wrote this one:
 
             std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
             std::vector< double > temp_vertices;
@@ -257,7 +260,7 @@ void Application::doGUI() {
                 //int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
                 int matches = fscanf(file, "%u %u %u\n", &vertexIndex[0], &vertexIndex[1], &vertexIndex[2]);
                 if (matches != 3){
-                    printf("File can't be read by our simple parser : ( Try exporting with other options\n");
+                    printf("Cant read this .obj");
                    // return false;
                 }
                 vertexIndices.push_back(vertexIndex[0]);
@@ -279,20 +282,22 @@ void Application::doGUI() {
 
             cgra::Matrix<unsigned int> faces(vertexIndices.size()/3,3);
             for(unsigned int i=0; i< vertexIndices.size()/3;i++) faces.setRow(i,{vertexIndices[i*3]-1,vertexIndices[i*3+1]-1,vertexIndices[i*3+2]-1});
-            m_mesh.setData(verts,faces);
 
+
+            int numVertices  = temp_vertices.size()/3;
+            int numTriangles = vertexIndices.size()/3;
+            printf("Verts %u, Tris %u,\n", numVertices, numTriangles);
+
+     m_mesh.setData(verts,faces);
 
      } //endif loading
     }//endif textinput
 
-    // Example for rotation, use glm to create a a rotation
-    // matrix from this vector
 
+    //debugging stuff:
 
-    /*static glm::vec3 rotation(0, 0, 0);
-    if (ImGui::InputFloat3("Rotation", &rotation[0])) {
-        // This block is executed if the input changes
-    }*/
+    ImGui::Text("tricount%d : " , m_mesh.m_indices.size()/3);
+    ImGui::Text("vertcount%d : " , m_mesh.m_vertices.size());
 
     ImGui::End();
 }
@@ -321,15 +326,19 @@ void Application::onCursorPos(double xpos, double ypos) {
     // Get the difference from the previous mouse position
     glm::vec2 mousePositionDelta = currentMousePosition - m_mousePosition;
 
-    glm::mat4 rotmat =  glm::rotate(glm::mat4(),60.0f, glm::vec3( mousePositionDelta.x,mousePositionDelta.y,0.5));
+  //  glm::mat4 rotmat =  glm::rotate(glm::mat4(),60.0f, glm::vec3( mousePositionDelta.x,mousePositionDelta.y,0.5));
     //m_rotationMatrix *= rotmat;
 
 
     if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_LEFT]) {
+        //glm::vec3 axis = glm::inverse(m_rotationMatrix) * glm::vec3(0,1,0);
+
 
     } else if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_MIDDLE]) {
+        m_scale *= 1+mousePositionDelta.y;
 
     } else if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_RIGHT]) {
+
 
     }
 
