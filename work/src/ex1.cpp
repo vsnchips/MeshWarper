@@ -170,7 +170,7 @@ void Application::drawScene() {
                     (glm::rotate(glm::vec3(0.,0.,1.),polarrotation.x,glm::vec3(0.,1.,0.))) // tilt it on Y over to X to latitude
                     ,polarrotation.y, glm::vec3(0.,0.,1.));  // spin it on true Zorth to longtitude
 
-        yax = glm::rotate(
+       /* yax = glm::rotate(
                     glm::vec3(0.,1.,0.) // tilt it on Y over to X to latitude
                     ,polarrotation.y, glm::vec3(0.,0.,1.));  // spin it on true Zorth to longtitude
 
@@ -178,7 +178,15 @@ void Application::drawScene() {
                     (glm::rotate(glm::vec3(1.,0.,0.),polarrotation.x,glm::vec3(0.,1.,0.))) // tilt it on Y over to X to latitude
                     ,polarrotation.y, glm::vec3(0.,0.,1.));  // spin it on true Zorth to longtitude
 
-        //2. Rotate X and Y around the tilted Z pole/
+        */
+
+        //2.Find the normal and angle between Zorth and the new Z, and apply the same rotation to Xwest and YCelestial
+        glm::vec3 tnorm = glm::cross(glm::vec3(0.,0.,1.),zax);
+        yax = glm::rotate(glm::vec3(0.,1.,0.),polarrotation.x,tnorm);
+        xax = glm::rotate(glm::vec3(1.,0.,0.),polarrotation.x,tnorm);
+
+
+        //3. Rotate X and Y around the tilted Z pole/
         yax = glm::rotate(yax, polarrotation.z, zax);
         xax = glm::rotate(xax, polarrotation.z, zax);
 
@@ -416,7 +424,7 @@ void Application::onCursorPos(double xpos, double ypos) {
         //1.Get Latitude and Longtitude
         polarrotation.x = glm::acos(glm::dot(glm::vec3(0.,0.,1.),zax)); // -pi<Latitude<=pi ;
 
-        polarrotation.y = glm::atan(zax.x,zax.y);
+        polarrotation.y = glm::atan(zax.y,zax.x);
         //if (zax.y < 0.f) polarrotation.y = polarrotation.y + M_PI;  // Longtitude
         //polarrotation.y = polarrotation.y + ((zax.y < 0.f )? M_PI : 0);  // Longtitude
 
@@ -428,8 +436,9 @@ void Application::onCursorPos(double xpos, double ypos) {
         glm::vec3 uprightY = glm::rotate(yax,polarrotation.x,tiltnorm);
         //glm::vec3 uprightY = yax * untilt;
 
+        // Get the Z angle
         polarrotation.z = glm::acos(glm::dot(uprightX,glm::vec3(1.0f,0.f,0.f)));
-        polarrotation.z += uprightX.y<0? M_PI : 0.f;
+        //polarrotation.z -= uprightX.y<0? M_PI : 0.f;
 
     }else click = false;
 
