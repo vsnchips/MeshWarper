@@ -28,7 +28,10 @@ public:
     // A 4x4 matrix representing the rotation of the
     // mesh,
     // And a vec3 with the z/y/x/ coords.
+
+    glm::vec3 xax,yax,zax;
     glm::vec3 manrotate;
+    glm::vec3 polarrotation;
     glm::mat4 m_rotationMatrix;
 
     // Whether or not the left, middle or right buttons are down.
