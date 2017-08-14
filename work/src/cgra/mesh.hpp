@@ -35,6 +35,8 @@ namespace cgra {
         // fourth triangles.
         std::vector<unsigned int> m_indices;
 
+       float maxdist;
+
         // Whether or not to draw this mesh as a wireframe
         bool m_drawWireframe;
 

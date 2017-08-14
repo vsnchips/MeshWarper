@@ -32,12 +32,14 @@ void Application::init() {
     // Create a view matrix that positions the camera
     // 10 units behind the object
     glm::mat4 viewMatrix(1);
-    viewMatrix[3] = glm::vec4(0, 0, -10, 1);
+    viewMatrix[3] = glm::vec4(0, 0, -1, 1);
     m_program.setViewMatrix(viewMatrix);
 
     xax = glm::vec3(1.,0.,0.);
     yax = glm::vec3(0.,1.,0.);
     zax = glm::vec3(0.,0.,1.);
+
+    m_translation.z=-2.0f;
 
     printf("\nxax: %f,%f,%f",xax.x,xax.y,xax.z);
     printf("\nyax: %f,%f,%f",yax.x,yax.y,yax.z);
@@ -85,6 +87,7 @@ void Application::createCube() {
     triangles.setRow(10, { 2, 1, 5 });
     triangles.setRow(11, { 2, 5, 6 });
 
+    m_mesh.maxdist = sqrt(3);
     m_mesh.setData(vertices, triangles);
 }
 
@@ -185,22 +188,38 @@ void Application::doGUI() {
      ************************************************************
      */
 
-    ImGui::SliderFloat3("Translate",&m_translation[0],-10.0f,10.0f, "%.5f",1.5f);
-    ImGui::SliderFloat("Scale",&m_scale,-5.0f,5.0f, "%.5f", 1.5f);
+    ImGui::SliderFloat3("Translate",&m_translation[0],-20.0f,20.0f, "%.5f",1.5f);
+    ImGui::SliderFloat("Scale",&m_scale,0,5.0f, "%.5f", 2.5f);
     if(ImGui::SliderFloat3("Rotate",&polarrotation[0],-M_PI,M_PI, "%.5f", 1.0f)){
         // User's spun the globe
         // Find the resulting matrix!
 
         //1. Transform the Z/north pole, X/west, and Y/celestial vectors via the input lat/long TODO: How do i get this into a mat3x3?
-        zax = glm::rotate(
-                    (glm::rotate(glm::vec3(0.,0.,1.),polarrotation.x,glm::vec3(0.,1.,0.))) // tilt it on Y over to X to latitude
-                    ,polarrotation.y, glm::vec3(0.,0.,1.));  // spin it on true Zorth to longtitude
+     if ( polarrotation.x == 0 ){
+         zax = glm::vec3(0,0,1);
+         yax = glm::vec3(0,1,0);
+         xax = glm::vec3(1,0,0);
+     }
+     else {
+         //fix for negative latitudes:
+         float polx,poly;
+         if (polarrotation.x < 0){
+             polx =-polarrotation.x;
+             poly = polarrotation.y + M_PI;
+         } else {
+             polx = polarrotation.x;
+             poly = polarrotation.y;
+         }
+
+         zax = glm::rotate(
+                    (glm::rotate(glm::vec3(0.,0.,1.),polx,glm::vec3(0.,1.,0.))) // tilt it on Y over to X to latitude
+                    ,poly, glm::vec3(0.,0.,1.));  // spin it on true Zorth to longtitude
 
         //2.Find the normal and angle between Zorth and the new Z, and apply the same rotation to Xwest and YCelestial
         glm::vec3 tnorm = glm::cross(glm::vec3(0.,0.,1.),zax);
-        yax = glm::rotate(glm::vec3(0.,1.,0.),polarrotation.x,tnorm);
-        xax = glm::rotate(glm::vec3(1.,0.,0.),polarrotation.x,tnorm);
-
+        yax = glm::rotate(glm::vec3(0.,1.,0.),polx,tnorm);
+        xax = glm::rotate(glm::vec3(1.,0.,0.),polx,tnorm);
+      }
         //3. Rotate X and Y around the tilted Z pole/
         yax = glm::rotate(yax, polarrotation.z, zax);
         xax = glm::rotate(xax, polarrotation.z, zax);
@@ -214,7 +233,6 @@ void Application::doGUI() {
      *  mode.                                                   *
      ************************************************************/
 
-    ImGui::Checkbox("Show Modelspace Base Vectors",&showCards);
     static bool wireframe;
     if(ImGui::Checkbox("Draw Wireframe",&wireframe)) {
         m_mesh.setDrawWireframe(wireframe);
@@ -248,6 +266,8 @@ void Application::doGUI() {
             std::vector< double > temp_uvs;
             std::vector< double > temp_normals;
 
+            float farvert=0; //get the furtherest vertex
+
             while( 1 ){
 
                 char lineHeader[128];
@@ -264,6 +284,10 @@ void Application::doGUI() {
                 temp_vertices.push_back(vertexx);
                 temp_vertices.push_back(vertexy);
                 temp_vertices.push_back(vertexz);
+
+                float len = glm::length(glm::vec3(vertexx,vertexy,vertexz));
+                farvert = len>farvert? len : farvert;
+
             }else if ( strcmp( lineHeader, "vt" ) == 0 ){
                 float uvx;
                 float uvy;
@@ -313,16 +337,18 @@ void Application::doGUI() {
             int numTriangles = vertexIndices.size()/3;
             printf("Verts %u, Tris %u,\n", numVertices, numTriangles);
 
+    m_mesh.maxdist = farvert;
      m_mesh.setData(verts,faces);
 
      } //endif loading
     }//endif textinput
 
+    if(ImGui::Button("Load Cube")) createCube();
 
     //debugging stuff:
 
-    ImGui::Text("tricount%d : " , m_mesh.m_indices.size()/3);
-    ImGui::Text("vertcount%d : " , m_mesh.m_vertices.size());
+    ImGui::Text("tricount :%d" , m_mesh.m_indices.size()/3);
+    ImGui::Text("vertcount : %d" , m_mesh.m_vertices.size());
 
     ImGui::End();
 }
@@ -351,82 +377,120 @@ void Application::onCursorPos(double xpos, double ypos) {
     // Get the difference from the previous mouse position
     glm::vec2 mousePositionDelta = currentMousePosition - m_mousePosition;
 
-    static bool click=false;
-    static glm::vec3 sxa, sya, sza;
-    static glm::vec2 fclick;
+    if (glm::length(mousePositionDelta)>0){
 
-    if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_LEFT]) {
-        static int width, height;
-        glfwGetWindowSize(m_window, &width, &height);
-        if (!click) {
-            printf("Clicked\n");
-            click = true;
+        static bool click=false;
+        static glm::vec3 sxa, sya, sza;
+        static glm::vec2 fclick;
+
+       if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_LEFT]) {
+           static int width, height;
+           glfwGetWindowSize(m_window, &width, &height);
+
+           int size = glm::min(width,height);
+
+               fclick = glm::vec2(-1+2*m_mousePosition.x/width,-1+2*m_mousePosition.y/height);
+               sxa = xax;
+               sya = yax;
+               sza = zax;
+
+            glm::vec2 nowpos = glm::vec2(-1+2*currentMousePosition.x/width,-1+2*currentMousePosition.y/height);
+
+            if (height>width) {nowpos.y *= height/width; fclick.y *= height/width;}
+            else {nowpos.y *= width/height; fclick.y *= width/height;}
+
+            nowpos.x *= 0.8;
+            nowpos.y *=0.8;
+            fclick.x *= 0.8;
+            fclick.y *=0.8;
+
+            nowpos.x*=-m_translation.z;
+            nowpos.y*=-m_translation.z;
+            fclick.x*=-m_translation.z;
+            fclick.y*=-m_translation.z;
+            nowpos.x = nowpos.x - m_translation.x;
+            fclick.x = fclick.x - m_translation.x;
+            nowpos.y = nowpos.y + m_translation.y;
+            fclick.y = fclick.y + m_translation.y;
+            /*
+            nowpos.x -= m_translation.x/(-m_translation.z);
+            nowpos.y -= m_translation.y/(-m_translation.z);
+            fclick.x -= m_translation.x/(-m_translation.z);
+            fclick.y -= m_translation.y/(-m_translation.z);*/
+
+            nowpos.x /= m_mesh.maxdist;
+            nowpos.y /= m_mesh.maxdist;
+
+            fclick.x /= m_mesh.maxdist;
+            fclick.y /= m_mesh.maxdist;
+
+            nowpos.x /=m_scale;
+            nowpos.y /=m_scale;
+
+            fclick.x /=m_scale;
+            fclick.y /=m_scale;
 
 
-            fclick = glm::vec2(-1+2*currentMousePosition.x/width,-1+2*currentMousePosition.y/height);
-            printf("currentMouse: %lf, %lf",fclick.x,fclick.y);
-            sxa = xax;
-            sya = yax;
-            sza = zax;
-            printf("sxa : %lf,%lf,%lf",sxa.x,sxa.y,sxa.z);
+            if (glm::length(fclick) > 1) fclick = glm::normalize(fclick);
+            if (glm::length(nowpos) > 1) nowpos = glm::normalize(nowpos);
+
+            //vectorise Arc Points
+            printf("\ncurrentMouse: %lf, %lf",fclick.x,fclick.y);
+            glm::vec4 apA = glm::vec4(fclick.x,-fclick.y,glm::cos(glm::asin(glm::min(glm::length(fclick),0.99999f))),1.);
+            glm::vec4 apB = glm::vec4(nowpos.x,-nowpos.y,glm::cos(glm::asin(glm::min(glm::length(nowpos),0.99999f))),1.);
+
+
+            glm::vec3 apA3 = glm::vec3(apA.x,apA.y,apA.z);
+            glm::vec3 apB3 = glm::vec3(apB.x,apB.y,apB.z);
+            float t = glm::acos(glm::dot(glm::normalize(apA3),glm::normalize(apB3)));
+
+            if (isnan(t) ) {printf("  T NAN !!!");
+                t = 0.f;
+                apA=glm::vec4(1.);
+                apB=glm::vec4(1.);
+                apA3=glm::vec3(1.,0.,0);
+                apB3=glm::vec3(0.,0.,1.);
+            }
+
+            glm::vec3 n = glm::cross(apA3,apB3);
+            xax= glm::rotate(sxa,t,n);
+            yax= glm::rotate(sya,t,n);
+            zax= glm::rotate(sza,t,n);
+
+            //Transform modified by arcball twiddling
+            //This codes updates the polar coords:
+
+            //1.Get Latitude and Longtitude
+            polarrotation.x = glm::acos(glm::dot(glm::vec3(0.,0.,1.),zax)); // -pi<Latitude<=pi ;
+
+            polarrotation.y = glm::atan(zax.y,zax.x);
+
+            //2. Get the normal of current and reference Z basevecs
+            glm::vec3 tiltnorm = glm::cross(zax,glm::vec3(0.,0.,1.));
+            glm::vec3 uprightX = glm::rotate(xax,polarrotation.x,tiltnorm);
+            glm::vec3 uprightY = glm::rotate(yax,polarrotation.x,tiltnorm);
+
+            // Get the Z angle
+            polarrotation.z = glm::acos(glm::dot(uprightX,glm::vec3(1.0f,0.f,0.f)));
+
         }
 
-        glm::vec2 nowpos = glm::vec2(-1+2*currentMousePosition.x/width,-1+2*currentMousePosition.y/height);
-        glm::vec4 apA = glm::vec4(fclick.x,-fclick.y,glm::cos(glm::asin(glm::min(glm::length(fclick),1.0f))),1.);
-        glm::vec4 apB = glm::vec4(nowpos.x,-nowpos.y,glm::cos(glm::asin(glm::min(glm::length(nowpos),1.0f))),1.);
-
-        //Debugging the Interactive Transform
-        printf("apA : %lf,%lf,%lf,%lf",apA.x,apA.y,apA.z,apA.w);
-        printf("apB : %lf,%lf,%lf,%lf",apB.x,apB.y,apB.z,apB.w);
-
-        glm::vec3 apA3 = glm::vec3(apA.x,apA.y,apA.z);
-        glm::vec3 apB3 = glm::vec3(apB.x,apB.y,apB.z);
-        float t = glm::acos(glm::dot(glm::normalize(apA3),glm::normalize(apB3)));
-
-        printf("\nt: %f", t);
-        glm::vec3 n = glm::cross(apA3,apB3);
-        printf("\nxax: %f,%f,%f",n.x,n.y,n.z);
-        xax= glm::rotate(sxa,t,n);
-        yax= glm::rotate(sya,t,n);
-        zax= glm::rotate(sza,t,n);
-
-        printf("\nxax: %f,%f,%f",xax.x,xax.y,xax.z);
-        printf("\nyax: %f,%f,%f",yax.x,yax.y,yax.z);
-        printf("\nzax: %f,%f,%f",zax.x,zax.y,zax.z);
-
-        //Transform modified by arcball twiddling
-        //To it as polar coords:
-
-        //1.Get Latitude and Longtitude
-        polarrotation.x = glm::acos(glm::dot(glm::vec3(0.,0.,1.),zax)); // -pi<Latitude<=pi ;
-
-        polarrotation.y = glm::atan(zax.y,zax.x);
-
-        //2. Get the normal of current and reference Z basevecs
-        glm::vec3 tiltnorm = glm::cross(zax,glm::vec3(0.,0.,1.));
-        glm::vec3 uprightX = glm::rotate(xax,polarrotation.x,tiltnorm);
-        glm::vec3 uprightY = glm::rotate(yax,polarrotation.x,tiltnorm);
-
-        // Get the Z angle
-        polarrotation.z = glm::acos(glm::dot(uprightX,glm::vec3(1.0f,0.f,0.f)));
-
-    }else click = false;
 
      if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_MIDDLE]) {
          static int width, height;
          glfwGetWindowSize(m_window, &width, &height);
-         //glm::vec4 shift = m_rotationMatrix * glm::vec4(2*mousePositionDelta.x/width,-2*mousePositionDelta.y/height,0.0,0.0);
-         glm::vec2 shift = glm::vec2(4*mousePositionDelta.x/width,-4*mousePositionDelta.y/height);
+         int size = glm::max(width,height);
+         glm::vec2 shift = glm::vec2((m_translation.z)*-mousePositionDelta.x/size,(m_translation.z)*mousePositionDelta.y/size);
          m_translation = glm::vec3(m_translation.x+shift.x,m_translation.y+shift.y,m_translation.z);
 
 
     }if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_RIGHT]) {
          //
-         m_scale += glm::min(m_scale,0.1f)*0.1*mousePositionDelta.y;
+         m_scale += glm::max(m_scale,0.1f)*0.1*-mousePositionDelta.y;
     }
-
-    // Update the mouse position to the current one
-    m_mousePosition = currentMousePosition;
+     // Update the mouse position to the current one
+     m_mousePosition = currentMousePosition;
+}
 }
 
 void Application::onKey(int key, int scancode, int action, int mods) {

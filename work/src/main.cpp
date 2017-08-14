@@ -158,21 +158,6 @@ int main(int argc, const char** argv) {
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 // Now we draw the GUI over the top of everything else
                 ImGui::Render();
-
-                if (app.showCards){
-                glBegin(GL_LINES);
-                glVertex3d(0,0,0);
-                glVertex3d(app.zax.x,app.zax.y,app.zax.z);
-                glEnd();
-                glBegin(GL_LINES);
-                glVertex3d(0,0,0);
-                glVertex3d(app.xax.x,app.xax.y,app.xax.z);
-                glEnd();
-                glBegin(GL_LINES);
-                glVertex3d(0,0,0);
-                glVertex3d(app.yax.x,app.yax.y,app.yax.z);
-                glEnd();
-                }
                 // Finally, swap the front and back buffers.
                 // We've been drawing to the back buffer so far, so this
                 // makes it visible.

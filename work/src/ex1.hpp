@@ -30,14 +30,11 @@ public:
     // And a vec3 with the z/y/x/ coords.
 
     glm::vec3 xax,yax,zax;
-    glm::vec3 manrotate;
     glm::vec3 polarrotation;
     glm::mat4 m_rotationMatrix;
 
     // Whether or not the left, middle or right buttons are down.
     bool m_mouseButtonDown[3];
-
-    bool showCards;
 
     Application(GLFWwindow *win)
         : m_window(win),
