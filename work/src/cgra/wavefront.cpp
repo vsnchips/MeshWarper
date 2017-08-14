@@ -31,6 +31,10 @@ namespace cgra {
         std::string line;
         std::string mode;
         size_t lineNumber = 0;
+
+        if (file.good()) std::cout << "\n good file!\n";
+
+        wavefront.range=0.;
         while (file.good()) {
             // Get the next line in the file
             std::getline(file, line);
@@ -56,6 +60,9 @@ namespace cgra {
                 w = 1.0f;
                 lineStream >> x >> y >> z >> w;
                 wavefront.m_positions.push_back(glm::vec4(x, y, z, w));
+                float len = glm::length(glm::vec3(x,y,z));
+                if (len > wavefront.range) wavefront.range=len;
+               // std::cout << "\nPushing vertex number " << wavefront.m_positions.size();
             } else if (mode == "vt") {
                 // Vertex Texture Coordinate
                 // Wavefront texture coordinates can have two or three components

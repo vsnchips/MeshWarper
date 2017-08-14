@@ -8,6 +8,7 @@ namespace cgra {
 
     class Wavefront {
     public:
+
         // Enum that represents the type of vertex
         // Wavefront vertices must have a position,
         // but normals and texture coordinates are
@@ -61,6 +62,8 @@ namespace cgra {
 
         // A list of faces.
         std::vector<Face> m_faces;
+
+        float range;
 
         // Load a wavefront file.
         static Wavefront load(const char *filename, bool expectTriangles = true);

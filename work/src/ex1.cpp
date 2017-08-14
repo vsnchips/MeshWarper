@@ -95,7 +95,7 @@ void Application::loadObj(const char *filename) {
     cgra::Wavefront obj;
     // Wrap the loading in a try..catch block
     try {
-        cgra::Wavefront obj = cgra::Wavefront::load(filename);
+        obj = cgra::Wavefront::load(filename);
     } catch (std::exception e) {
         std::cerr << "Couldn't load file: '" << e.what() << "'" << std::endl;
         return;
@@ -114,23 +114,26 @@ void Application::loadObj(const char *filename) {
     int numVertices  = obj.m_positions.size();
     int numTriangles = obj.m_faces.size();
     printf("\nVerts %u, Tris %u,\n", numVertices, numTriangles);
+    printf("\n Vertex 0 : %lf %lf %lf\n", obj.position(10).x, obj.position(10).y, obj.position(10).z);
 
     cgra::Matrix<double> vertices(numVertices, 3);
     cgra::Matrix<unsigned int> triangles(numTriangles, 3);
 
-    for (size_t i = 0; i < obj.m_positions.size(); i++) {
-        // Add each position to the vertices matrix
-        for(int i = 1; i <= numVertices;i++) vertices.setRow(i-1,{obj.position(i).x,obj.position(i).y,obj.position(i).z});
-    }
 
-    for (size_t i = 0; i < obj.m_faces.size(); i++) {
+    std::cout << "\nFilling Verts\n" << std::endl;
+
+        // Add each position to the vertices matrix
+        for(int i = 1; i <= numVertices;i++){
+            vertices.setRow(i-1,{obj.m_positions[i-1].x,obj.position(i).y,obj.position(i).z});
+        }
+
+    std::cout << "\nFilling Tris\n" << std::endl;
         // Add each triangle's indices to the triangles matrix
         // Remember that Wavefront files use indices that start at 1
         for(int i = 0; i < numTriangles;i++) triangles.setRow(i,{obj.m_faces[i].m_vertices[0].m_p-1,
                                                                  obj.m_faces[i].m_vertices[1].m_p-1,
                                                                  obj.m_faces[i].m_vertices[2].m_p-1});
-    }
-
+    m_mesh.maxdist = obj.range;
     m_mesh.setData(vertices, triangles);
 }
 
@@ -240,7 +243,7 @@ void Application::doGUI() {
 
     // MESH LOADING:
 
-    static char dragon[] = "../../meshes/stanford_dragon/dragon.obj";
+    static char dragon[] = "res/models/dragon.obj";
 
     static char path[256];
 
@@ -257,10 +260,12 @@ void Application::doGUI() {
         }else {
             printf("Loading %s \n", path);
 
-            //loadObj(path);   // The CGRA wavefront loader isnt working for me
+            loadObj(path);
+
+            // The CGRA wavefront loader wasnt working for me
 
             // So I wrote this one:
-
+            /*
             std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
             std::vector< double > temp_vertices;
             std::vector< double > temp_uvs;
@@ -321,6 +326,7 @@ void Application::doGUI() {
                 normalIndices.push_back(normalIndex[0]);
                 normalIndices.push_back(normalIndex[1]);
                 normalIndices.push_back(normalIndex[2]);
+
             }
 
 
@@ -337,8 +343,8 @@ void Application::doGUI() {
             int numTriangles = vertexIndices.size()/3;
             printf("Verts %u, Tris %u,\n", numVertices, numTriangles);
 
-    m_mesh.maxdist = farvert;
-     m_mesh.setData(verts,faces);
+     m_mesh.maxdist = farvert;
+     m_mesh.setData(verts,faces);*/
 
      } //endif loading
     }//endif textinput
