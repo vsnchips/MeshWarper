@@ -153,63 +153,16 @@ void Application::drawScene() {
      *    `glm::scale`                                          *
      ************************************************************/
 
-    static bool show_app_manualtransforms = false;
-
-   // ImGui::Begin("Manual Transforms",&show_app_manualtransforms,ImVec2(250,200),1.f,0);
-    ImGui::Begin("Manual Transforms",&show_app_manualtransforms,ImVec2(250,200));
-    //ImGui::Begin("Manual Transforms");
-
-    ImGui::SliderFloat3("Translate",&m_translation[0],-10.0f,10.0f, "%.5f",1.5f);
-    ImGui::SliderFloat("Scale",&m_scale,-5.0f,5.0f, "%.5f", 1.5f);
-    if(ImGui::SliderFloat3("Rotate",&polarrotation[0],-M_PI,M_PI, "%.5f", 1.0f)){
-        // User's spun the globe
-        // Find the resulting matrix!
-
-        //1. Transform the Z/north pole, X/west, and Y/celestial vectors via the input lat/long TODO: How do i get this into a mat3x3?
-        zax = glm::rotate(
-                    (glm::rotate(glm::vec3(0.,0.,1.),polarrotation.x,glm::vec3(0.,1.,0.))) // tilt it on Y over to X to latitude
-                    ,polarrotation.y, glm::vec3(0.,0.,1.));  // spin it on true Zorth to longtitude
-
-       /* yax = glm::rotate(
-                    glm::vec3(0.,1.,0.) // tilt it on Y over to X to latitude
-                    ,polarrotation.y, glm::vec3(0.,0.,1.));  // spin it on true Zorth to longtitude
-
-        xax = glm::rotate(
-                    (glm::rotate(glm::vec3(1.,0.,0.),polarrotation.x,glm::vec3(0.,1.,0.))) // tilt it on Y over to X to latitude
-                    ,polarrotation.y, glm::vec3(0.,0.,1.));  // spin it on true Zorth to longtitude
-
-        */
-
-        //2.Find the normal and angle between Zorth and the new Z, and apply the same rotation to Xwest and YCelestial
-        glm::vec3 tnorm = glm::cross(glm::vec3(0.,0.,1.),zax);
-        yax = glm::rotate(glm::vec3(0.,1.,0.),polarrotation.x,tnorm);
-        xax = glm::rotate(glm::vec3(1.,0.,0.),polarrotation.x,tnorm);
-
-
-        //3. Rotate X and Y around the tilted Z pole/
-        yax = glm::rotate(yax, polarrotation.z, zax);
-        xax = glm::rotate(xax, polarrotation.z, zax);
-
-    };
-    ImGui::End();
-
-
-    glm::mat4 basevecs = glm::mat4(glm::vec4(xax,0),glm::vec4(yax,0),glm::vec4(zax,0),glm::vec4(0.f,0.f,0.f,1.f));
-    //m_rotationMatrix = glm::rotate(glm::mat4(1.0),manrotate.z,zax);
-    m_rotationMatrix = glm::rotate(basevecs,manrotate.z,zax);
-    m_rotationMatrix = glm::rotate(m_rotationMatrix,manrotate.y,yax);
-    m_rotationMatrix = glm::rotate(m_rotationMatrix,manrotate.x,xax);
-
     modelTransform *= glm::translate(glm::mat4(),m_translation);
     modelTransform *= glm::scale(modelTransform,glm::vec3(m_scale));
-
+    m_rotationMatrix = glm::mat4(glm::vec4(xax,0),glm::vec4(yax,0),glm::vec4(zax,0),glm::vec4(0.f,0.f,0.f,1.f));
     modelTransform *= m_rotationMatrix;
-
 
     m_program.setModelMatrix(modelTransform);
 
     // Draw the mesh
     m_mesh.draw();
+
 }
 
 void Application::doGUI() {
@@ -228,17 +181,46 @@ void Application::doGUI() {
      *                                                          *
      * Create inputs for controlling translation, scale and     *
      * rotation.                                                *
-     *                                                          *
+     *
+     ************************************************************
+     */
+
+    ImGui::SliderFloat3("Translate",&m_translation[0],-10.0f,10.0f, "%.5f",1.5f);
+    ImGui::SliderFloat("Scale",&m_scale,-5.0f,5.0f, "%.5f", 1.5f);
+    if(ImGui::SliderFloat3("Rotate",&polarrotation[0],-M_PI,M_PI, "%.5f", 1.0f)){
+        // User's spun the globe
+        // Find the resulting matrix!
+
+        //1. Transform the Z/north pole, X/west, and Y/celestial vectors via the input lat/long TODO: How do i get this into a mat3x3?
+        zax = glm::rotate(
+                    (glm::rotate(glm::vec3(0.,0.,1.),polarrotation.x,glm::vec3(0.,1.,0.))) // tilt it on Y over to X to latitude
+                    ,polarrotation.y, glm::vec3(0.,0.,1.));  // spin it on true Zorth to longtitude
+
+        //2.Find the normal and angle between Zorth and the new Z, and apply the same rotation to Xwest and YCelestial
+        glm::vec3 tnorm = glm::cross(glm::vec3(0.,0.,1.),zax);
+        yax = glm::rotate(glm::vec3(0.,1.,0.),polarrotation.x,tnorm);
+        xax = glm::rotate(glm::vec3(1.,0.,0.),polarrotation.x,tnorm);
+
+        //3. Rotate X and Y around the tilted Z pole/
+        yax = glm::rotate(yax, polarrotation.z, zax);
+        xax = glm::rotate(xax, polarrotation.z, zax);
+
+    };
+
+    /*
      ************************************************************
      *                                                          *
      * 5. Add a checkbox for rendering the object in wireframe  *
      *  mode.                                                   *
      ************************************************************/
+
+    ImGui::Checkbox("Show Modelspace Base Vectors",&showCards);
     static bool wireframe;
-    if(ImGui::Button("WireFrame ?")) {
-        wireframe = !wireframe;
+    if(ImGui::Checkbox("Draw Wireframe",&wireframe)) {
         m_mesh.setDrawWireframe(wireframe);
-}
+    }
+
+    // MESH LOADING:
 
     static char dragon[] = "../../meshes/stanford_dragon/dragon.obj";
 
@@ -246,7 +228,9 @@ void Application::doGUI() {
 
     if (std::strlen(path)<1) std::strcpy(path,dragon);
 
-    if (ImGui::InputText("Load *.OBJ",path, 256)){
+    (ImGui::InputText("Load *.OBJ",path, 256));
+
+    if(ImGui::Button("Load File")){
 
         FILE * file = fopen(path, "r");
         if( file == NULL ){
@@ -367,15 +351,11 @@ void Application::onCursorPos(double xpos, double ypos) {
     // Get the difference from the previous mouse position
     glm::vec2 mousePositionDelta = currentMousePosition - m_mousePosition;
 
-  //  glm::mat4 rotmat =  glm::rotate(glm::mat4(),60.0f, glm::vec3( mousePositionDelta.x,mousePositionDelta.y,0.5));
-    //m_rotationMatrix *= rotmat;
-
     static bool click=false;
     static glm::vec3 sxa, sya, sza;
     static glm::vec2 fclick;
 
     if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_LEFT]) {
-        //glm::vec3 axis = glm::inverse(m_rotationMatrix) * glm::vec3(0,1,0);
         static int width, height;
         glfwGetWindowSize(m_window, &width, &height);
         if (!click) {
@@ -395,16 +375,12 @@ void Application::onCursorPos(double xpos, double ypos) {
         glm::vec4 apA = glm::vec4(fclick.x,-fclick.y,glm::cos(glm::asin(glm::min(glm::length(fclick),1.0f))),1.);
         glm::vec4 apB = glm::vec4(nowpos.x,-nowpos.y,glm::cos(glm::asin(glm::min(glm::length(nowpos),1.0f))),1.);
 
-
+        //Debugging the Interactive Transform
         printf("apA : %lf,%lf,%lf,%lf",apA.x,apA.y,apA.z,apA.w);
         printf("apB : %lf,%lf,%lf,%lf",apB.x,apB.y,apB.z,apB.w);
 
-        //apA=glm::normalize(apA);
-        //apB=glm::normalize(apB);
-
         glm::vec3 apA3 = glm::vec3(apA.x,apA.y,apA.z);
         glm::vec3 apB3 = glm::vec3(apB.x,apB.y,apB.z);
-        //glm::mat4 arc = glm::rotate(glm::mat4(1.0),(glm::acos(glm::dot(apA,apB))),glm::cross(apA3,apB3));
         float t = glm::acos(glm::dot(glm::normalize(apA3),glm::normalize(apB3)));
 
         printf("\nt: %f", t);
@@ -425,31 +401,29 @@ void Application::onCursorPos(double xpos, double ypos) {
         polarrotation.x = glm::acos(glm::dot(glm::vec3(0.,0.,1.),zax)); // -pi<Latitude<=pi ;
 
         polarrotation.y = glm::atan(zax.y,zax.x);
-        //if (zax.y < 0.f) polarrotation.y = polarrotation.y + M_PI;  // Longtitude
-        //polarrotation.y = polarrotation.y + ((zax.y < 0.f )? M_PI : 0);  // Longtitude
 
         //2. Get the normal of current and reference Z basevecs
         glm::vec3 tiltnorm = glm::cross(zax,glm::vec3(0.,0.,1.));
-        //glm::mat4 untilt = glm::rotate(glm::vec3(1.),polarrotation.x,tiltnorm);
-        //glm::vec3 uprightX = xax * glm::rotate(vec3(1.),polarrotation.x,tiltnorm);
         glm::vec3 uprightX = glm::rotate(xax,polarrotation.x,tiltnorm);
         glm::vec3 uprightY = glm::rotate(yax,polarrotation.x,tiltnorm);
-        //glm::vec3 uprightY = yax * untilt;
 
         // Get the Z angle
         polarrotation.z = glm::acos(glm::dot(uprightX,glm::vec3(1.0f,0.f,0.f)));
-        //polarrotation.z -= uprightX.y<0? M_PI : 0.f;
 
     }else click = false;
 
      if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_MIDDLE]) {
-        m_scale += glm::min(m_scale,0.1f)*0.1*mousePositionDelta.y;
+         static int width, height;
+         glfwGetWindowSize(m_window, &width, &height);
+         //glm::vec4 shift = m_rotationMatrix * glm::vec4(2*mousePositionDelta.x/width,-2*mousePositionDelta.y/height,0.0,0.0);
+         glm::vec2 shift = glm::vec2(4*mousePositionDelta.x/width,-4*mousePositionDelta.y/height);
+         m_translation = glm::vec3(m_translation.x+shift.x,m_translation.y+shift.y,m_translation.z);
+
 
     }if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_RIGHT]) {
          //
+         m_scale += glm::min(m_scale,0.1f)*0.1*mousePositionDelta.y;
     }
-
-
 
     // Update the mouse position to the current one
     m_mousePosition = currentMousePosition;

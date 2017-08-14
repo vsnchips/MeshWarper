@@ -37,6 +37,8 @@ public:
     // Whether or not the left, middle or right buttons are down.
     bool m_mouseButtonDown[3];
 
+    bool showCards;
+
     Application(GLFWwindow *win)
         : m_window(win),
           m_viewportSize(1, 1), m_mousePosition(0, 0),
