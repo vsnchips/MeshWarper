@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="GLEW"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\CMake\;CMake Files\vendor\;CMake Files\vendor\glew\;CMake Files\vendor\glfw\;CMake Files\vendor\glfw\src\;CMake Files\vendor\glm\;CMake Files\vendor\glm\cmake\;CMake Files\vendor\glm\glm\;CMake Files\vendor\glm\test\;CMake Files\vendor\glm\test\bug\;CMake Files\vendor\glm\test\core\;CMake Files\vendor\glm\test\gtc\;CMake Files\vendor\glm\test\gtx\;CMake Files\vendor\imgui\;CMake Files\src\;CMake Files\src\cgra\;CMake Files\res\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="glew">
+				<Option output="/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/bin/libglew.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DGLEW_STATIC"/>
+					<Add directory="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.1/../../../../include/c++/7.1.1"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.1/../../../../include/c++/7.1.1/x86_64-pc-linux-gnu"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.1/../../../../include/c++/7.1.1/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.1/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.1/include-fixed"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 glew"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="glew/fast">
+				<Option output="/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/bin/libglew.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DGLEW_STATIC"/>
+					<Add directory="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.1/../../../../include/c++/7.1.1"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.1/../../../../include/c++/7.1.1/x86_64-pc-linux-gnu"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.1/../../../../include/c++/7.1.1/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.1/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/7.1.1/include-fixed"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 glew/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/home/shelly/mount/Hotprog/CGRA/a1/build-work-Desktop-Default/vendor/glew/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/include/GL/glew.h">
+			<Option target="glew"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/include/GL/glxew.h">
+			<Option target="glew"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/include/GL/wglew.h">
+			<Option target="glew"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/src/glew.c">
+			<Option target="glew"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/CMake/CGRACompiler.cmake">
+			<Option virtualFolder="CMake Files\CMake\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/CMake/CGRAFunctions.cmake">
+			<Option virtualFolder="CMake Files\CMake\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glew\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glew\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glfw\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glfw\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/src/glfw3Config.cmake.in">
+			<Option virtualFolder="CMake Files\vendor\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/src/glfw_config.h.in">
+			<Option virtualFolder="CMake Files\vendor\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/src/glfw3.pc.in">
+			<Option virtualFolder="CMake Files\vendor\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/src/glfw3Config.cmake.in">
+			<Option virtualFolder="CMake Files\vendor\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/src/glfw_config.h.in">
+			<Option virtualFolder="CMake Files\vendor\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/src/glfw3.pc.in">
+			<Option virtualFolder="CMake Files\vendor\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glfw\src\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/cmake/glmBuildConfig.cmake.in">
+			<Option virtualFolder="CMake Files\vendor\glm\cmake\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/cmake/glmConfig.cmake.in">
+			<Option virtualFolder="CMake Files\vendor\glm\cmake\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/cmake/glmBuildConfig.cmake.in">
+			<Option virtualFolder="CMake Files\vendor\glm\cmake\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/cmake/glmConfig.cmake.in">
+			<Option virtualFolder="CMake Files\vendor\glm\cmake\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/glm/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\glm\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/glm/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\glm\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\test\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\test\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/test/bug/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\test\bug\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/test/bug/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\test\bug\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/test/core/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\test\core\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/test/core/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\test\core\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/test/gtc/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\test\gtc\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/test/gtc/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\test\gtc\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/test/gtx/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\test\gtx\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/test/gtx/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\glm\test\gtx\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/imgui/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\vendor\imgui\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/src/cgra/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\src\cgra\"/>
+		</Unit>
+		<Unit filename="/home/shelly/mount/Hotprog/CGRA/a1/work/res/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\res\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
