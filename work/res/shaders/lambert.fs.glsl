@@ -1,7 +1,7 @@
 
 #version 150 core
 
-int gColor= 2;
+int gColor;
 
 out vec4 color;
 

@@ -57,6 +57,10 @@ namespace cgra {
         GLuint m_ibo;
 
 
+        int ojID;
+
+        void setID(int id);
+
         // Set the mesh data using two Matrices.
         //
         // `vertices` is an n x 3 matrix of vertex positions

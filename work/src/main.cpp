@@ -139,20 +139,22 @@ int main(int argc, const char** argv) {
                 glViewport(0, 0, width, height);
                 // Update the app's window size
                 app.setWindowSize(width, height);
+                if (app.sceneon){
+                    // Clear the color and depth buffers.
+                    //glClearColor(0, 0, 0.1, 1); // Clears the color to a dark blue
+                    glClearColor(0.8, 0.2, 0.5, 1); // Clears the color to a dark blue
+                    glClearDepth(1); // Clears the depth buffer to it's maximum value
+                    // Actually tell OpenGL to clear the buffers
+                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-                // Clear the color and depth buffers.
-                //glClearColor(0, 0, 0.1, 1); // Clears the color to a dark blue
-                glClearColor(0.8, 0.2, 0.5, 1); // Clears the color to a dark blue
-                glClearDepth(1); // Clears the depth buffer to it's maximum value
-                // Actually tell OpenGL to clear the buffers
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                    // Create the GUI.
+                    // Note: this does not draw the GUI
+                    app.doGUI();
 
-                // Create the GUI.
-                // Note: this does not draw the GUI
-                app.doGUI();
+                    // Draw the scene.
+                    app.drawScene();
 
-                // Draw the scene.
-                app.drawScene();
+                }
 
                 // Make sure that we're drawing with the correct
                 // polygon mode

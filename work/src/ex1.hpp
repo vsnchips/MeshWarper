@@ -10,10 +10,14 @@ class Application {
 public:
 
     ///Part 2 vars
+    
+    bool clickon;
 
     int deformTechniqueId;
     Lattice theLattice;
     
+    bool sceneon;
+    int pickID;
     /////////////////////////////////////////// Part 1 Vars
     // The window object managed by GLFW
     GLFWwindow *m_window;
@@ -22,6 +26,7 @@ public:
     cgra::Program m_program;
     // The mesh data
     cgra::Mesh m_mesh;
+    cgra::Mesh m_spheremesh;
 
     // The current size of the viewport
     glm::vec2 m_viewportSize;
@@ -61,7 +66,7 @@ public:
     void init();
 
     void createCube();
-    void loadObj(const char *filename);
+    void loadObj(const char *filename,cgra::Mesh &);
 
     void drawScene();
     void doGUI();
@@ -73,4 +78,8 @@ public:
     void onCursorPos(double xpos, double ypos);
 
     void onScroll(double xoffset, double yoffset);
+
+    int pickTest(float mX, float mY);
+    int pickTest();
+
 };

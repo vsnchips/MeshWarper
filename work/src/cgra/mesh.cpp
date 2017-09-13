@@ -84,6 +84,7 @@ namespace cgra {
             m_indices.push_back(li[0]);
             m_indices.push_back(li[1]);
 
+         
             //dont care about normals for this wireframe;
         }
 
@@ -161,6 +162,12 @@ namespace cgra {
         // GL_UNSIGNED_INT tells OpenGL that the index buffer is storing unsigned
         // ints.
         glDrawElements(mode, m_indices.size(), GL_UNSIGNED_INT, 0);
+    }
+
+
+    void Mesh::setID(int id){
+        ojID=id;
+        return;
     }
 
     void Mesh::deleteMesh() {

@@ -50,9 +50,11 @@ void Application::init() {
     printf("\nzax: %f,%f,%f",zax.x,zax.y,zax.z);
 
 
-
     // Create the cube mesh
     createCube();
+
+    //Load the sphereobj;
+    loadObj("res/models/sphere.obj",m_spheremesh);
 
 }
 
@@ -99,7 +101,7 @@ void Application::createCube() {
     m_mesh.setData(vertices, triangles);
 }
 
-void Application::loadObj(const char *filename) {
+void Application::loadObj(const char *filename,cgra::Mesh &targetMesh) {
     cgra::Wavefront obj;
     // Wrap the loading in a try..catch block
     try {
@@ -141,8 +143,8 @@ void Application::loadObj(const char *filename) {
         for(int i = 0; i < numTriangles;i++) triangles.setRow(i,{obj.m_faces[i].m_vertices[0].m_p-1,
                                                                  obj.m_faces[i].m_vertices[1].m_p-1,
                                                                  obj.m_faces[i].m_vertices[2].m_p-1});
-    m_mesh.maxdist = obj.range;
-    m_mesh.setData(vertices, triangles);
+    targetMesh.maxdist = obj.range;
+    targetMesh.setData(vertices, triangles);
 
 
 }
@@ -179,6 +181,7 @@ void Application::drawScene() {
     // Draw the mesh
 
     m_mesh.draw(GL_TRIANGLES);
+    theLattice.draw(m_program,modelTransform,m_rotationMatrix,glm::translate(glm::mat4(),m_translation),m_scale);
 
     theLattice.latticeMesh.draw(GL_LINES);
 
@@ -250,6 +253,8 @@ void Application::doGUI() {
 
     
     ImGui::Begin("Lattice");
+        static bool s;
+        if(ImGui::Checkbox("drawScene?",&s)) sceneon=s;
 
         static glm::vec3 latres;
         static int lx,ly,lz;
@@ -260,22 +265,22 @@ void Application::doGUI() {
         if (ImGui::Button("Generate Lattice")){
 
 
-            glm::vec3 min = glm::vec3(m_mesh/m_vertices[0].m_position.x , m_mesh/m_vertices[0].m_position.y , m_mesh/m_vertices[0].m_position.z ) ;
-            glm::vec3 max = glm::vec3(m_mesh/m_vertices[0].m_position.x , m_mesh/m_vertices[0].m_position.y , m_mesh/m_vertices[0].m_position.z ) ;
+            glm::vec3 min = glm::vec3(m_mesh.m_vertices[0].m_position.x , m_mesh.m_vertices[0].m_position.y , m_mesh.m_vertices[0].m_position.z ) ;
+            glm::vec3 max = glm::vec3(m_mesh.m_vertices[0].m_position.x , m_mesh.m_vertices[0].m_position.y , m_mesh.m_vertices[0].m_position.z ) ;
 
             printf("Set first min/max\n");
-            printf("numVertices %i\n", numVertices);
+            printf("numVertices %i\n", m_mesh.m_vertices.size());
 
-            for (int i = 0; i<numVertices; i++){
+            for (int i = 0; i<m_mesh.m_vertices.size(); i++){
                 printf("checking vertex %i\n", i);
-                min = glm::min(min, glm::vec3(m_mesh/m_vertices[i].m_position.x , m_mesh/m_vertices[i].m_position.y , m_mesh/m_vertices[i].m_position.z ));
-                max = glm::max(max, glm::vec3(m_mesh/m_vertices[i].m_position.x , m_mesh/m_vertices[i].m_position.y , m_mesh/m_vertices[i].m_position.z ));
+                min = glm::min(min, glm::vec3(m_mesh.m_vertices[i].m_position.x , m_mesh.m_vertices[i].m_position.y , m_mesh.m_vertices[i].m_position.z ));
+                max = glm::max(max, glm::vec3(m_mesh.m_vertices[i].m_position.x , m_mesh.m_vertices[i].m_position.y , m_mesh.m_vertices[i].m_position.z ));
             }
 
 
             //printf("Found min/max\n Min: %f %f %f \n Max: %f %f %f", min.x, min.y, min.z, max.x, max.y, max.z);
 
-            theLattice = Lattice(min,max, glm::vec3(10,10,10));
+            theLattice = Lattice(min,max, glm::vec3(lx,ly,lz),m_spheremesh);
 
             //printf("x: %f y %f z: %f\n", theLattice.m_resolution.x, theLattice.m_resolution.y, theLattice.m_resolution.z);
 
@@ -316,7 +321,7 @@ void Application::doGUI() {
         }else {
             printf("Loading %s \n", path);
 
-            loadObj(path);
+            loadObj(path,m_mesh);
 
             // The CGRA wavefront loader wasnt working for me
 
@@ -419,6 +424,7 @@ void Application::doGUI() {
 // Input Handlers
 
 void Application::onMouseButton(int button, int action, int) {
+
     if (button >=0 && button < 3) {
         // Set the 'down' state for the appropriate mouse button
         m_mouseButtonDown[button] = action == GLFW_PRESS;
@@ -441,11 +447,19 @@ void Application::onCursorPos(double xpos, double ypos) {
 
     if (glm::length(mousePositionDelta)>0){
 
+
         static bool click=false;
         static glm::vec3 sxa, sya, sza;
         static glm::vec2 fclick;
 
+
        if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_LEFT]) {
+
+
+        if (click == false) pickID = pickTest();   //If its a new click, test for picking
+        if (pickID == 0){
+
+           click = true;
            static int width, height;
            glfwGetWindowSize(m_window, &width, &height);
 
@@ -534,7 +548,10 @@ void Application::onCursorPos(double xpos, double ypos) {
 
             // Get the Z angle
             polarrotation.z = glm::acos(glm::dot(uprightX,glm::vec3(1.0f,0.f,0.f)));
+            }  else {
+                theLattice.getByID(pickID).move(mousePositionDelta,m_rotationMatrix,m_scale);
 
+            }
         }
 
 
@@ -568,3 +585,32 @@ void Application::onScroll(double xoffset, double yoffset) {
     (void)xoffset;
     (void)yoffset;
 }
+
+
+//int Application::pickTest(float mX, float mY){
+int Application::pickTest(){
+
+// Clear the back buffer
+glClearColor(0, 0, 0, 1);
+glClearDepth(1);
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Setting the variable before drawing
+// Set to -1 if NOT color picking
+for (int i=0; i<theLattice.m_nodes.size();i++){
+    int colorID = theLattice.m_nodes[i].ojID;
+    GLuint loc = glGetUniformLocation(
+    m_program.glName(), "gColor");
+    glUniform1i(loc, colorID);
+    theLattice.m_nodes[i].draw();
+}
+
+// Reading in after drawing
+unsigned char pixel[4];
+glReadPixels(m_mousePosition.x,
+m_viewportSize.y - m_mousePosition.y, 1, 1,   GL_RGBA,   GL_UNSIGNED_BYTE,   &pixel);
+int pickedID = pixel[0]; // Use this to select vertex
+
+return pickedID;
+
+};
