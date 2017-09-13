@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/src/glew.c
+/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/glew/src/glew.c
 GL/glew.h
 -
 GL/wglew.h

@@ -1,4 +1,4 @@
-# Install script for directory: /home/shelly/mount/Hotprog/CGRA/a1/work
+# Install script for directory: /home/shelly/mount/Hotprog/CGRA/a2/work
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,12 +34,12 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/cmake_install.cmake")
-  include("/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/cmake_install.cmake")
-  include("/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glm/cmake_install.cmake")
-  include("/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/imgui/cmake_install.cmake")
-  include("/home/shelly/mount/Hotprog/CGRA/a1/work/src/cmake_install.cmake")
-  include("/home/shelly/mount/Hotprog/CGRA/a1/work/res/cmake_install.cmake")
+  include("/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/glew/cmake_install.cmake")
+  include("/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/glfw/cmake_install.cmake")
+  include("/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/glm/cmake_install.cmake")
+  include("/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/imgui/cmake_install.cmake")
+  include("/home/shelly/mount/Hotprog/CGRA/a2/work/src/cmake_install.cmake")
+  include("/home/shelly/mount/Hotprog/CGRA/a2/work/res/cmake_install.cmake")
 
 endif()
 
@@ -51,5 +51,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/shelly/mount/Hotprog/CGRA/a1/work/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/shelly/mount/Hotprog/CGRA/a2/work/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

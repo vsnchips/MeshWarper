@@ -12,6 +12,7 @@
 #include "cgra/wavefront.hpp"
 
 #include "ex1.hpp"
+#include "lattice.hpp"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -22,11 +23,14 @@
 
 
 void Application::init() {
+
+
     // Load the shader program
     // The use of CGRA_SRCDIR "/path/to/shader" is so you don't
     // have to run the program from a specific folder.
     m_program = cgra::Program::load_program(
         CGRA_SRCDIR "/res/shaders/simple.vs.glsl",
+        //CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
         CGRA_SRCDIR "/res/shaders/simple.fs.glsl");
 
     // Create a view matrix that positions the camera
@@ -44,8 +48,12 @@ void Application::init() {
     printf("\nxax: %f,%f,%f",xax.x,xax.y,xax.z);
     printf("\nyax: %f,%f,%f",yax.x,yax.y,yax.z);
     printf("\nzax: %f,%f,%f",zax.x,zax.y,zax.z);
+
+
+
     // Create the cube mesh
     createCube();
+
 }
 
 void Application::createCube() {
@@ -135,6 +143,32 @@ void Application::loadObj(const char *filename) {
                                                                  obj.m_faces[i].m_vertices[2].m_p-1});
     m_mesh.maxdist = obj.range;
     m_mesh.setData(vertices, triangles);
+
+
+
+    // Create a mesh
+
+    //Create a Lattice
+
+        glm::vec3 min = glm::vec3(obj.m_positions[0].x , obj.m_positions[0].y, obj.m_positions[0].z ) ;
+        glm::vec3 max = glm::vec3(obj.m_positions[0].x , obj.m_positions[0].y, obj.m_positions[0].z ) ;
+
+    printf("Set first min/max\n");
+    printf("numVertices %i\n", numVertices);
+
+    for (int i = 0; i<numVertices; i++){
+        printf("checking vertex %i\n", i);
+        min = glm::min(min, glm::vec3(obj.m_positions[i].x , obj.m_positions[i].y, obj.m_positions[i].z ));
+        max = glm::max(max, glm::vec3(obj.m_positions[i].x , obj.m_positions[i].y, obj.m_positions[i].z ));
+    }
+
+
+    //printf("Found min/max\n Min: %f %f %f \n Max: %f %f %f", min.x, min.y, min.z, max.x, max.y, max.z);
+
+    theLattice = Lattice(min,max, glm::vec3(10,10,10));
+
+    //printf("x: %f y %f z: %f\n", theLattice.m_resolution.x, theLattice.m_resolution.y, theLattice.m_resolution.z);
+
 }
 
 void Application::drawScene() {
@@ -167,7 +201,10 @@ void Application::drawScene() {
     m_program.setModelMatrix(modelTransform);
 
     // Draw the mesh
-    m_mesh.draw();
+
+    m_mesh.draw(GL_TRIANGLES);
+
+    theLattice.latticeMesh.draw(GL_LINES);
 
 }
 
@@ -229,6 +266,11 @@ void Application::doGUI() {
 
     };
 
+    ImGui::Begin("Deformations");
+        if (ImGui::Button("Trilinear")) ;// theLattice.setTechnique(0)
+        if (ImGui::Button("Bezier")) ;// theLattice.setTechnique(1)
+        if (ImGui::Button("Catmull-Rom Spline")) ;// theLattice.setTechnique(2)
+    ImGui::End();
     /*
      ************************************************************
      *                                                          *

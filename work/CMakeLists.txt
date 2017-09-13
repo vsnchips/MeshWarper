@@ -9,7 +9,7 @@ cmake_minimum_required(VERSION 3.1)
 SET(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake" ${CMAKE_MODULE_PATH})
 
 # Assignment Name
-set(CGRA_PROJECT "a1" CACHE STRING "CGRA Project Name")
+set(CGRA_PROJECT "a2" CACHE STRING "CGRA Project Name")
 
 # Project
 project("CGRA_PROJECT_${CGRA_PROJECT}" CXX C)

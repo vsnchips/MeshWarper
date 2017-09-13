@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/imgui/imgui.cpp" "/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/imgui/CMakeFiles/imgui.dir/imgui.cpp.o"
-  "/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/imgui/imgui_draw.cpp" "/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.o"
+  "/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/imgui/imgui.cpp" "/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/imgui/CMakeFiles/imgui.dir/imgui.cpp.o"
+  "/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/imgui/imgui_draw.cpp" "/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/imgui/CMakeFiles/imgui.dir/imgui_draw.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

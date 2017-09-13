@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/shelly/mount/Hotprog/CGRA/a1/work
+CMAKE_SOURCE_DIR = /home/shelly/mount/Hotprog/CGRA/a2/work
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/shelly/mount/Hotprog/CGRA/a1/work
+CMAKE_BINARY_DIR = /home/shelly/mount/Hotprog/CGRA/a2/work
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -126,9 +126,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a1/work/CMakeFiles /home/shelly/mount/Hotprog/CGRA/a1/work/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a2/work/CMakeFiles /home/shelly/mount/Hotprog/CGRA/a2/work/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a1/work/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a2/work/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -196,17 +196,17 @@ imgui/fast:
 .PHONY : imgui/fast
 
 #=============================================================================
-# Target rules for targets named a1
+# Target rules for targets named a2
 
 # Build rule for target.
-a1: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 a1
-.PHONY : a1
+a2: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 a2
+.PHONY : a2
 
 # fast build rule for target.
-a1/fast:
-	$(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/build
-.PHONY : a1/fast
+a2/fast:
+	$(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/build
+.PHONY : a2/fast
 
 # Help Target
 help:
@@ -223,7 +223,7 @@ help:
 	@echo "... glew"
 	@echo "... glfw"
 	@echo "... imgui"
-	@echo "... a1"
+	@echo "... a2"
 .PHONY : help
 
 

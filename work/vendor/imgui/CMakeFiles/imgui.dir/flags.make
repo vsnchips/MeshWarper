@@ -6,5 +6,5 @@ CXX_FLAGS =  -std=c++1y -fno-operator-names -Wall -Wextra -pedantic -Woverloaded
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glfw/include -I/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/imgui 
+CXX_INCLUDES = -I/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/glfw/include -I/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/imgui 
 

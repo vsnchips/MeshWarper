@@ -165,4 +165,6 @@ namespace cgra {
 
         return shader;
     }
+
+    GLuint Program::glName() { return m_program; }
 }

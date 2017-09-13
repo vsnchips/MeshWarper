@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/shelly/mount/Hotprog/CGRA/a1/work
+CMAKE_SOURCE_DIR = /home/shelly/mount/Hotprog/CGRA/a2/work
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/shelly/mount/Hotprog/CGRA/a1/work
+CMAKE_BINARY_DIR = /home/shelly/mount/Hotprog/CGRA/a2/work
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -126,14 +126,14 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a1/work/CMakeFiles /home/shelly/mount/Hotprog/CGRA/a1/work/src/cgra/CMakeFiles/progress.marks
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f CMakeFiles/Makefile2 src/cgra/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a1/work/CMakeFiles 0
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a2/work/CMakeFiles /home/shelly/mount/Hotprog/CGRA/a2/work/src/cgra/CMakeFiles/progress.marks
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f CMakeFiles/Makefile2 src/cgra/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a2/work/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f CMakeFiles/Makefile2 src/cgra/clean
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f CMakeFiles/Makefile2 src/cgra/clean
 .PHONY : clean
 
 # The main clean target
@@ -143,17 +143,17 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f CMakeFiles/Makefile2 src/cgra/preinstall
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f CMakeFiles/Makefile2 src/cgra/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f CMakeFiles/Makefile2 src/cgra/preinstall
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f CMakeFiles/Makefile2 src/cgra/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Help Target
@@ -179,6 +179,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

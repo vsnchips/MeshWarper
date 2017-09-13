@@ -13,9 +13,11 @@ namespace cgra {
         if (vertices.numCols() != 3) {
             throw std::out_of_range("`vertices` should have 3 columns");
         }
+
+        /*
         if (triangles.numCols() != 3) {
             throw std::out_of_range("`triangles` should have 3 columns");
-        }
+        }*/
 
         // delete any GPU objects we may have
         deleteMesh();
@@ -40,6 +42,8 @@ namespace cgra {
 
         // Copy the data from `triangles` into `m_indices`
         // Also calculate vertex normals
+
+        if (triangles.numCols() == 3) {
         for (unsigned int r = 0; r < triangles.numRows(); r++) {
             const unsigned int *tri = triangles[r];
 
@@ -72,6 +76,18 @@ namespace cgra {
             v1.m_normal += normal;
             v2.m_normal += normal;
         }
+    }   else if (triangles.numCols() == 2){
+        printf("filling a line matrix into the line mesh\n");
+        for (unsigned int r = 0; r < triangles.numRows(); r++) {
+            const unsigned int *li = triangles[r];
+
+            m_indices.push_back(li[0]);
+            m_indices.push_back(li[1]);
+
+            //dont care about normals for this wireframe;
+        }
+
+    }
 
         // Normalize the normals for each vertex, ensuring that the length is
         // 1.
@@ -80,7 +96,7 @@ namespace cgra {
         }
     }
 
-    void Mesh::draw() {
+    void Mesh::draw(GLenum mode) {
         // Check to see if we have all the GPU objects we need to draw the
         // mesh.
         if (m_vbo == 0 || m_ibo == 0 || m_vao == 0) {
@@ -144,7 +160,7 @@ namespace cgra {
         // We're using all of the indices, starting at the beginning.
         // GL_UNSIGNED_INT tells OpenGL that the index buffer is storing unsigned
         // ints.
-        glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(mode, m_indices.size(), GL_UNSIGNED_INT, 0);
     }
 
     void Mesh::deleteMesh() {

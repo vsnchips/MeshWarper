@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/shelly/mount/Hotprog/CGRA/a1/work
+CMAKE_SOURCE_DIR = /home/shelly/mount/Hotprog/CGRA/a2/work
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/shelly/mount/Hotprog/CGRA/a1/work
+CMAKE_BINARY_DIR = /home/shelly/mount/Hotprog/CGRA/a2/work
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -126,14 +126,14 @@ install/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a1/work/CMakeFiles /home/shelly/mount/Hotprog/CGRA/a1/work/src/CMakeFiles/progress.marks
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f CMakeFiles/Makefile2 src/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a1/work/CMakeFiles 0
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a2/work/CMakeFiles /home/shelly/mount/Hotprog/CGRA/a2/work/src/CMakeFiles/progress.marks
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f CMakeFiles/Makefile2 src/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/shelly/mount/Hotprog/CGRA/a2/work/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f CMakeFiles/Makefile2 src/clean
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f CMakeFiles/Makefile2 src/clean
 .PHONY : clean
 
 # The main clean target
@@ -143,33 +143,33 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f CMakeFiles/Makefile2 src/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
 # Convenience name for target.
-src/CMakeFiles/a1.dir/rule:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/a1.dir/rule
-.PHONY : src/CMakeFiles/a1.dir/rule
+src/CMakeFiles/a2.dir/rule:
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f CMakeFiles/Makefile2 src/CMakeFiles/a2.dir/rule
+.PHONY : src/CMakeFiles/a2.dir/rule
 
 # Convenience name for target.
-a1: src/CMakeFiles/a1.dir/rule
+a2: src/CMakeFiles/a2.dir/rule
 
-.PHONY : a1
+.PHONY : a2
 
 # fast build rule for target.
-a1/fast:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/build
-.PHONY : a1/fast
+a2/fast:
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/build
+.PHONY : a2/fast
 
 cgra/imgui_impl_glfw_gl3.o: cgra/imgui_impl_glfw_gl3.cpp.o
 
@@ -177,7 +177,7 @@ cgra/imgui_impl_glfw_gl3.o: cgra/imgui_impl_glfw_gl3.cpp.o
 
 # target to build an object file
 cgra/imgui_impl_glfw_gl3.cpp.o:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/imgui_impl_glfw_gl3.cpp.o
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/imgui_impl_glfw_gl3.cpp.o
 .PHONY : cgra/imgui_impl_glfw_gl3.cpp.o
 
 cgra/imgui_impl_glfw_gl3.i: cgra/imgui_impl_glfw_gl3.cpp.i
@@ -186,7 +186,7 @@ cgra/imgui_impl_glfw_gl3.i: cgra/imgui_impl_glfw_gl3.cpp.i
 
 # target to preprocess a source file
 cgra/imgui_impl_glfw_gl3.cpp.i:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/imgui_impl_glfw_gl3.cpp.i
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/imgui_impl_glfw_gl3.cpp.i
 .PHONY : cgra/imgui_impl_glfw_gl3.cpp.i
 
 cgra/imgui_impl_glfw_gl3.s: cgra/imgui_impl_glfw_gl3.cpp.s
@@ -195,7 +195,7 @@ cgra/imgui_impl_glfw_gl3.s: cgra/imgui_impl_glfw_gl3.cpp.s
 
 # target to generate assembly for a file
 cgra/imgui_impl_glfw_gl3.cpp.s:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/imgui_impl_glfw_gl3.cpp.s
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/imgui_impl_glfw_gl3.cpp.s
 .PHONY : cgra/imgui_impl_glfw_gl3.cpp.s
 
 cgra/mesh.o: cgra/mesh.cpp.o
@@ -204,7 +204,7 @@ cgra/mesh.o: cgra/mesh.cpp.o
 
 # target to build an object file
 cgra/mesh.cpp.o:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/mesh.cpp.o
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/mesh.cpp.o
 .PHONY : cgra/mesh.cpp.o
 
 cgra/mesh.i: cgra/mesh.cpp.i
@@ -213,7 +213,7 @@ cgra/mesh.i: cgra/mesh.cpp.i
 
 # target to preprocess a source file
 cgra/mesh.cpp.i:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/mesh.cpp.i
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/mesh.cpp.i
 .PHONY : cgra/mesh.cpp.i
 
 cgra/mesh.s: cgra/mesh.cpp.s
@@ -222,7 +222,7 @@ cgra/mesh.s: cgra/mesh.cpp.s
 
 # target to generate assembly for a file
 cgra/mesh.cpp.s:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/mesh.cpp.s
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/mesh.cpp.s
 .PHONY : cgra/mesh.cpp.s
 
 cgra/shader.o: cgra/shader.cpp.o
@@ -231,7 +231,7 @@ cgra/shader.o: cgra/shader.cpp.o
 
 # target to build an object file
 cgra/shader.cpp.o:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/shader.cpp.o
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/shader.cpp.o
 .PHONY : cgra/shader.cpp.o
 
 cgra/shader.i: cgra/shader.cpp.i
@@ -240,7 +240,7 @@ cgra/shader.i: cgra/shader.cpp.i
 
 # target to preprocess a source file
 cgra/shader.cpp.i:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/shader.cpp.i
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/shader.cpp.i
 .PHONY : cgra/shader.cpp.i
 
 cgra/shader.s: cgra/shader.cpp.s
@@ -249,7 +249,7 @@ cgra/shader.s: cgra/shader.cpp.s
 
 # target to generate assembly for a file
 cgra/shader.cpp.s:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/shader.cpp.s
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/shader.cpp.s
 .PHONY : cgra/shader.cpp.s
 
 cgra/wavefront.o: cgra/wavefront.cpp.o
@@ -258,7 +258,7 @@ cgra/wavefront.o: cgra/wavefront.cpp.o
 
 # target to build an object file
 cgra/wavefront.cpp.o:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/wavefront.cpp.o
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/wavefront.cpp.o
 .PHONY : cgra/wavefront.cpp.o
 
 cgra/wavefront.i: cgra/wavefront.cpp.i
@@ -267,7 +267,7 @@ cgra/wavefront.i: cgra/wavefront.cpp.i
 
 # target to preprocess a source file
 cgra/wavefront.cpp.i:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/wavefront.cpp.i
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/wavefront.cpp.i
 .PHONY : cgra/wavefront.cpp.i
 
 cgra/wavefront.s: cgra/wavefront.cpp.s
@@ -276,7 +276,7 @@ cgra/wavefront.s: cgra/wavefront.cpp.s
 
 # target to generate assembly for a file
 cgra/wavefront.cpp.s:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/cgra/wavefront.cpp.s
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/cgra/wavefront.cpp.s
 .PHONY : cgra/wavefront.cpp.s
 
 ex1.o: ex1.cpp.o
@@ -285,7 +285,7 @@ ex1.o: ex1.cpp.o
 
 # target to build an object file
 ex1.cpp.o:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/ex1.cpp.o
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/ex1.cpp.o
 .PHONY : ex1.cpp.o
 
 ex1.i: ex1.cpp.i
@@ -294,7 +294,7 @@ ex1.i: ex1.cpp.i
 
 # target to preprocess a source file
 ex1.cpp.i:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/ex1.cpp.i
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/ex1.cpp.i
 .PHONY : ex1.cpp.i
 
 ex1.s: ex1.cpp.s
@@ -303,8 +303,35 @@ ex1.s: ex1.cpp.s
 
 # target to generate assembly for a file
 ex1.cpp.s:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/ex1.cpp.s
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/ex1.cpp.s
 .PHONY : ex1.cpp.s
+
+lattice.o: lattice.cpp.o
+
+.PHONY : lattice.o
+
+# target to build an object file
+lattice.cpp.o:
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/lattice.cpp.o
+.PHONY : lattice.cpp.o
+
+lattice.i: lattice.cpp.i
+
+.PHONY : lattice.i
+
+# target to preprocess a source file
+lattice.cpp.i:
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/lattice.cpp.i
+.PHONY : lattice.cpp.i
+
+lattice.s: lattice.cpp.s
+
+.PHONY : lattice.s
+
+# target to generate assembly for a file
+lattice.cpp.s:
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/lattice.cpp.s
+.PHONY : lattice.cpp.s
 
 main.o: main.cpp.o
 
@@ -312,7 +339,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/main.cpp.o
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -321,7 +348,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/main.cpp.i
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -330,7 +357,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(MAKE) -f src/CMakeFiles/a1.dir/build.make src/CMakeFiles/a1.dir/main.cpp.s
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(MAKE) -f src/CMakeFiles/a2.dir/build.make src/CMakeFiles/a2.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 # Help Target
@@ -341,7 +368,7 @@ help:
 	@echo "... depend"
 	@echo "... install/strip"
 	@echo "... edit_cache"
-	@echo "... a1"
+	@echo "... a2"
 	@echo "... rebuild_cache"
 	@echo "... list_install_components"
 	@echo "... install/local"
@@ -361,6 +388,9 @@ help:
 	@echo "... ex1.o"
 	@echo "... ex1.i"
 	@echo "... ex1.s"
+	@echo "... lattice.o"
+	@echo "... lattice.i"
+	@echo "... lattice.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
@@ -375,6 +405,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd /home/shelly/mount/Hotprog/CGRA/a1/work && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/shelly/mount/Hotprog/CGRA/a2/work && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

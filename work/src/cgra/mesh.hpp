@@ -77,7 +77,7 @@ namespace cgra {
         }
 
         // Draw the mesh
-        void draw();
+        void draw(GLenum mode);
 
         // Default constructor
         Mesh()

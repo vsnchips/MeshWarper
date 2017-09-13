@@ -6,12 +6,12 @@
 namespace cgra {
     template<typename T>
     class Matrix {
-        std::vector<T> m_data;
         unsigned int m_nrows;
         unsigned int m_ncols;
 
     public:
 
+        std::vector<T> m_data;
         Matrix(unsigned int size)
             : m_nrows(size), m_ncols(size) {
             m_data.resize(m_nrows * m_ncols);

@@ -1,4 +1,4 @@
-# Install script for directory: /home/shelly/mount/Hotprog/CGRA/a1/work/vendor/imgui
+# Install script for directory: /home/shelly/mount/Hotprog/CGRA/a2/work/vendor/imgui
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

@@ -4,9 +4,17 @@
 #include "cgra/shader.hpp"
 
 #include "glm/glm.hpp"
+#include "lattice.hpp"
 
 class Application {
 public:
+
+    ///Part 2 vars
+
+    int deformTechniqueId;
+    Lattice theLattice;
+    
+    /////////////////////////////////////////// Part 1 Vars
     // The window object managed by GLFW
     GLFWwindow *m_window;
 

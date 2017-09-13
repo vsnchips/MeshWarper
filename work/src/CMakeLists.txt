@@ -5,7 +5,8 @@
 SET(sources
   ex1.hpp
   ex1.cpp
-
+  lattice.hpp
+  lattice.cpp
   opengl.hpp
   main.cpp
 )

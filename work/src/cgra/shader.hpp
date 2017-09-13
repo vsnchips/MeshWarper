@@ -35,5 +35,7 @@ namespace cgra {
         // This specifies how to convert from 3D coordinates to
         // 2D coordinates
         void setProjectionMatrix(const glm::mat4 &);
+
+        GLuint glName();
     };
 }

@@ -6,5 +6,5 @@ C_FLAGS =  -w
 
 C_DEFINES = -DGLEW_STATIC
 
-C_INCLUDES = -I/home/shelly/mount/Hotprog/CGRA/a1/work/vendor/glew/include 
+C_INCLUDES = -I/home/shelly/mount/Hotprog/CGRA/a2/work/vendor/glew/include 
 
