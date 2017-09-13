@@ -180,9 +180,9 @@ void Application::drawScene() {
 
     // Draw the mesh
 
-    m_mesh.draw(GL_TRIANGLES);
     theLattice.draw(m_program,modelTransform,m_rotationMatrix,glm::translate(glm::mat4(),m_translation),m_scale);
 
+    m_mesh.draw(GL_TRIANGLES);
     theLattice.latticeMesh.draw(GL_LINES);
 
 }
