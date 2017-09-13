@@ -145,30 +145,6 @@ void Application::loadObj(const char *filename) {
     m_mesh.setData(vertices, triangles);
 
 
-
-    // Create a mesh
-
-    //Create a Lattice
-
-        glm::vec3 min = glm::vec3(obj.m_positions[0].x , obj.m_positions[0].y, obj.m_positions[0].z ) ;
-        glm::vec3 max = glm::vec3(obj.m_positions[0].x , obj.m_positions[0].y, obj.m_positions[0].z ) ;
-
-    printf("Set first min/max\n");
-    printf("numVertices %i\n", numVertices);
-
-    for (int i = 0; i<numVertices; i++){
-        printf("checking vertex %i\n", i);
-        min = glm::min(min, glm::vec3(obj.m_positions[i].x , obj.m_positions[i].y, obj.m_positions[i].z ));
-        max = glm::max(max, glm::vec3(obj.m_positions[i].x , obj.m_positions[i].y, obj.m_positions[i].z ));
-    }
-
-
-    //printf("Found min/max\n Min: %f %f %f \n Max: %f %f %f", min.x, min.y, min.z, max.x, max.y, max.z);
-
-    theLattice = Lattice(min,max, glm::vec3(10,10,10));
-
-    //printf("x: %f y %f z: %f\n", theLattice.m_resolution.x, theLattice.m_resolution.y, theLattice.m_resolution.z);
-
 }
 
 void Application::drawScene() {
@@ -271,6 +247,44 @@ void Application::doGUI() {
         if (ImGui::Button("Bezier")) ;// theLattice.setTechnique(1)
         if (ImGui::Button("Catmull-Rom Spline")) ;// theLattice.setTechnique(2)
     ImGui::End();
+
+    
+    ImGui::Begin("Lattice");
+
+        static glm::vec3 latres;
+        static int lx,ly,lz;
+        ImGui::SliderInt("Lattice X", &lx, 0, 10);
+        ImGui::SliderInt("Lattice Y", &ly, 0, 10);
+        ImGui::SliderInt("Lattice Z", &lz, 0, 10);
+
+        if (ImGui::Button("Generate Lattice")){
+
+
+            glm::vec3 min = glm::vec3(m_mesh/m_vertices[0].m_position.x , m_mesh/m_vertices[0].m_position.y , m_mesh/m_vertices[0].m_position.z ) ;
+            glm::vec3 max = glm::vec3(m_mesh/m_vertices[0].m_position.x , m_mesh/m_vertices[0].m_position.y , m_mesh/m_vertices[0].m_position.z ) ;
+
+            printf("Set first min/max\n");
+            printf("numVertices %i\n", numVertices);
+
+            for (int i = 0; i<numVertices; i++){
+                printf("checking vertex %i\n", i);
+                min = glm::min(min, glm::vec3(m_mesh/m_vertices[i].m_position.x , m_mesh/m_vertices[i].m_position.y , m_mesh/m_vertices[i].m_position.z ));
+                max = glm::max(max, glm::vec3(m_mesh/m_vertices[i].m_position.x , m_mesh/m_vertices[i].m_position.y , m_mesh/m_vertices[i].m_position.z ));
+            }
+
+
+            //printf("Found min/max\n Min: %f %f %f \n Max: %f %f %f", min.x, min.y, min.z, max.x, max.y, max.z);
+
+            theLattice = Lattice(min,max, glm::vec3(10,10,10));
+
+            //printf("x: %f y %f z: %f\n", theLattice.m_resolution.x, theLattice.m_resolution.y, theLattice.m_resolution.z);
+
+            }
+    
+         // theLattice.setTechnique(0)
+    ImGui::End();
+
+
     /*
      ************************************************************
      *                                                          *
