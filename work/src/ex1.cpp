@@ -29,7 +29,7 @@ void Application::init() {
     // The use of CGRA_SRCDIR "/path/to/shader" is so you don't
     // have to run the program from a specific folder.
     m_program = cgra::Program::load_program(
-        CGRA_SRCDIR "/res/shaders/simple.vs.glsl",
+        CGRA_SRCDIR "/res/shaders/warpthedragon.vs.glsl",
         //CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
         CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
 
@@ -246,9 +246,9 @@ void Application::doGUI() {
     };
 
     ImGui::Begin("Deformations");
-        if (ImGui::Button("Trilinear")) ;// theLattice.setTechnique(0)
-        if (ImGui::Button("Bezier")) ;// theLattice.setTechnique(1)
-        if (ImGui::Button("Catmull-Rom Spline")) ;// theLattice.setTechnique(2)
+        if (ImGui::Button("Trilinear")) techID = 0 ;// theLattice.setTechnique(0)
+        if (ImGui::Button("Bezier")) techID = 0;// theLattice.setTechnique(1)
+        if (ImGui::Button("Catmull-Rom Spline")) techID = 0;// theLattice.setTechnique(2)
     ImGui::End();
 
     

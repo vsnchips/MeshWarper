@@ -201,8 +201,8 @@ void Lattice::makeVSArray(){
     	glm::vec4 p4 = glm::vec4(p.x,p.y,p.z,1);
     	//p4 = translation * p4;
 
-    	dydx.x/m_scale;
-    	dydx.y/m_scale;
+    	dydx.x/=m_scale;
+    	dydx.y/=m_scale;
 
     	dydx.x*=(1/(depth));
     	dydx.y*=(1/(depth));
@@ -233,7 +233,7 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
 		glm::mat4 nodeTransform(1.0f);
 
 	markerTransform *= modelTrans;
-	markerTransform *= glm::scale(markerTransform,glm::vec3(0.3));
+	markerTransform *= glm::scale(markerTransform,glm::vec3(1);
 
 		tp = rotMat * tp;
 		nodeTransform *= glm::translate(glm::mat4(20),glm::vec3(tp.x,tp.y,tp.z));
