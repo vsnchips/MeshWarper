@@ -6,6 +6,11 @@
 #include "glm/glm.hpp"
 #include "lattice.hpp"
 
+typedef struct shareGlobals{
+//fill this later
+
+}myGlobs;
+
 class Application {
 public:
 
@@ -18,6 +23,10 @@ public:
     
     bool sceneon;
     int pickID; 
+
+    int pickNode;
+
+    float pickDepth=1;
     /////////////////////////////////////////// Part 1 Vars
     // The window object managed by GLFW
     GLFWwindow *m_window;
@@ -38,7 +47,7 @@ public:
     // The scale of the mesh
     float m_scale;
 
-    int pickNode;
+
 
     // A 4x4 matrix representing the rotation of the
     // mesh,

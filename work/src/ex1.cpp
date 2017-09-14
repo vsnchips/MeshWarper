@@ -559,8 +559,8 @@ void Application::onCursorPos(double xpos, double ypos) {
             // Get the Z angle
             polarrotation.z = glm::acos(glm::dot(uprightX,glm::vec3(1.0f,0.f,0.f)));
             }  else {
-                
-                theLattice.getByID(pickID).move(glm::vec2(mousePositionDelta.x/height,mousePositionDelta.y/height),m_rotationMatrix,m_scale);
+
+                theLattice.getByID(pickID).move(glm::vec2(mousePositionDelta.x/height,mousePositionDelta.y/height),m_rotationMatrix,m_scale,pickDepth);
 
             }
         }
@@ -627,6 +627,8 @@ theLattice.drawForPick(m_program,
 unsigned char pixel[4];
 glReadPixels(m_mousePosition.x,
 m_viewportSize.y - m_mousePosition.y, 1, 1,   GL_RGBA,   GL_UNSIGNED_BYTE,   &pixel);
+glReadPixels(m_mousePosition.x,
+m_viewportSize.y - m_mousePosition.y, 1, 1,   GL_DEPTH_BUFFER_BIT,   GL_FLOAT,   &pickDepth);
 int pickedID = pixel[0]; // Use this to select vertex
 
 //glfwSwapBuffers(m_window);

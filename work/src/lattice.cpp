@@ -191,14 +191,26 @@ void Lattice::makeVSArray(){
 }
 
 
-    void LatticeNode::move(glm::vec2 dydx, glm::mat4 rotationmat, float m_scale){
+    void LatticeNode::move(glm::vec2 dydx, glm::mat4 rotationmat, float m_scale, float depth){
+
+
 
     	glm::mat4 translation = glm::translate(glm::mat4(1), glm::vec3(dydx.x,dydx.y,0));
     	//translation*=glm::affineInverse(rotationmat);
-    	translation*=glm::affineInverse(rotationmat);
+    	translation*=rotationmat;
     	glm::vec4 p4 = glm::vec4(p.x,p.y,p.z,1);
     	//p4 = translation * p4;
-    	p = glm::vec3(p4.x+dydx.x,p4.y+dydx.y,p4.z);
+
+    	dydx.x/m_scale;
+    	dydx.y/m_scale;
+
+    	dydx.x*=(1/(depth));
+    	dydx.y*=(1/(depth));
+
+    	printf("depth %f\n", depth);
+
+
+    	p = glm::vec3(p4.x+dydx.x,p4.y-dydx.y,p4.z);
         printf("move object by x %fy %fz %f\n", translation[3][0], translation[3][1], translation[3][2]);
 
     }
@@ -216,11 +228,11 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
 
 
 		glm::vec3 p = m_nodes[i].p;
-		glm::vec4 tp = glm::vec4(0.3*p.x*m_scale,0.3*p.y*m_scale,0.3*p.z*m_scale,0);
+		glm::vec4 tp = glm::vec4(p.x*m_scale,p.y*m_scale,p.z*m_scale,0);
 	
 		glm::mat4 nodeTransform(1.0f);
 
-	markerTransform *= nodeTransform;
+	markerTransform *= modelTrans;
 	markerTransform *= glm::scale(markerTransform,glm::vec3(0.3));
 
 		tp = rotMat * tp;
@@ -244,20 +256,22 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
 void Lattice::drawForPick(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){
 
 
-    GLuint loc = glGetUniformLocation(
+     GLuint loc = glGetUniformLocation(
     m_program.glName(), "gColor");
+    glUniform1i(loc,-1);
 
 	for(int i = 0; i <m_nodes.size(); i++){
 
+		if (!m_nodes[i].isEnd){
     glm::mat4 markerTransform(1.0f);
 
 
 		glm::vec3 p = m_nodes[i].p;
-		glm::vec4 tp = glm::vec4(0.3*p.x*m_scale,0.3*p.y*m_scale,0.3*p.z*m_scale,0);
+		glm::vec4 tp = glm::vec4(p.x*m_scale,p.y*m_scale,p.z*m_scale,0);
 	
-		glm::mat4 nodeTransform(1.0f);  
+		glm::mat4 nodeTransform(1.0f);
 
-	markerTransform *= nodeTransform;
+	markerTransform *= modelTrans;
 	markerTransform *= glm::scale(markerTransform,glm::vec3(0.3));
 
 		tp = rotMat * tp;
@@ -278,6 +292,7 @@ void Lattice::drawForPick(cgra::Program m_program,glm::mat4 modTransform,glm::ma
     }
 
     glUniform1i(loc,-1);
+  }
 }
 
 void LatticeNode::draw(){

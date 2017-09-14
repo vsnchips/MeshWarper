@@ -28,6 +28,7 @@ class LatticeNode{
 public:
 
 	glm::vec3 p;
+	glm::vec3 worldp;
 	int ojID;
 	int techID;
 	bool selected;
@@ -39,12 +40,13 @@ public:
 	LatticeNode(int k, glm::vec3(p));
 
 	cgra::Mesh * nodeMesh;
+
 	glm::mat4 myTransform;
 
 	void draw();
     void setID(int id);
 
-    void move(glm::vec2 dydx, glm::mat4 rotationmat, float m_scale);
+    void move(glm::vec2 dydx, glm::mat4 rotationmat, float m_scale, float depth);
 		
 };
 
