@@ -47,7 +47,7 @@ for (int i = -1; i < (int)res.x+1; i++) {
 			LatticeNode node = LatticeNode(ind,glm::vec3(  x  ,  y  ,  min.z+(max.z-min.z)*k/(res.z-1)   ));
 			m_nodes.push_back(node); // m_nodes is a vector, needs no matrix dimensions.
 			m_nodes.back().nodeMesh = &markmesh;
-			m_nodes.back().isEnd = (i < 0 || i > res.x || j < 0 || j > res.y || k < 0 || k > res.z);
+			m_nodes.back().isEnd = (i < 0 || i >= res.x || j < 0 || j >= res.y || k < 0 || k >= res.z);
 
 
 			printf("setting mesh row %d %f %f %f \n", ind, (double)x , (double)y  ,  (double)(min.z+(max.z-min.z)*k/(res.z-1))  );
@@ -193,25 +193,37 @@ void Lattice::makeVSArray(){
 
     void LatticeNode::move(glm::vec2 dydx, glm::mat4 rotationmat, float m_scale, float depth){
 
-
-
-    	glm::mat4 translation = glm::translate(glm::mat4(1), glm::vec3(dydx.x,dydx.y,0));
-    	//translation*=glm::affineInverse(rotationmat);
-    	translation*=rotationmat;
-    	glm::vec4 p4 = glm::vec4(p.x,p.y,p.z,1);
-    	//p4 = translation * p4;
+    	printf("depth %f\n", depth);
 
     	dydx.x/=m_scale;
     	dydx.y/=m_scale;
 
-    	dydx.x*=(1/(depth));
-    	dydx.y*=(1/(depth));
+    	dydx.x*=depth;
+    	dydx.y*=depth;
 
-    	printf("depth %f\n", depth);
+    	//glm::vec4 tvec = glm::vec4(dydx.x,dydx.y,0,1);
+    	//tvec *= glm::inverse(rotationmat);
 
+//    	glm::mat4 rotationTranslationMatrix = glm::translate(glm::inverse(rotationmat), glm::vec3(dydx.x,dydx.y,0));
+    	glm::vec4 transvec(dydx.x,-dydx.y,0,1);
 
-    	p = glm::vec3(p4.x+dydx.x,p4.y-dydx.y,p4.z);
-        printf("move object by x %fy %fz %f\n", translation[3][0], translation[3][1], translation[3][2]);
+    	transvec = glm::inverse(rotationmat) * transvec;
+
+        printf("move object by x %fy %fz %f\n", transvec.x,transvec.y,transvec.z);
+
+    	//glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1), glm::vec3(dydx.x,-dydx.y,0));
+
+    	glm::mat4 TranslationMatrix = glm::translate(glm::mat4(1), glm::vec3(transvec.x,transvec.y,transvec.z));
+
+    	//printf("tvec x %f y %f z %f\n", tvec.x,tvec.y,tvec.z);
+
+    	//p = glm::vec3(p4.x,p4.y,p4.z);
+    	glm::vec4 p4 = glm::vec4(p.x,p.y,p.z,1);
+    	//p4 = TranslationMatrix * glm::inverse(rotationmat) * p4;
+    	p4 = TranslationMatrix * p4;
+
+    	p = glm::vec3(p4.x,p4.y,p4.z);
+        printf("move object by x %fy %fz %f\n", TranslationMatrix[3][0], TranslationMatrix[3][1], TranslationMatrix[3][2]);
 
     }
 
@@ -223,7 +235,7 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
 
 	for(int i = 0; i <m_nodes.size(); i++){
 
-		if (!m_nodes[i].isEnd){
+		if (!m_nodes[i].isEnd && techID!= 2){
     glm::mat4 markerTransform(1.0f);
 
 
@@ -233,7 +245,7 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
 		glm::mat4 nodeTransform(1.0f);
 
 	markerTransform *= modelTrans;
-	markerTransform *= glm::scale(markerTransform,glm::vec3(1);
+	markerTransform *= glm::scale(markerTransform,glm::vec3(0.3));
 
 		tp = rotMat * tp;
 		nodeTransform *= glm::translate(glm::mat4(20),glm::vec3(tp.x,tp.y,tp.z));

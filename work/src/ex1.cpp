@@ -154,7 +154,7 @@ void Application::drawScene() {
     // width / height
     float aspectRatio = m_viewportSize.x / m_viewportSize.y;
     // Calculate the projection matrix with a field-of-view of 45 degrees
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 20.0f);
 
     // Set the projection matrix
     m_program.setProjectionMatrix(projectionMatrix);
@@ -246,9 +246,9 @@ void Application::doGUI() {
     };
 
     ImGui::Begin("Deformations");
-        if (ImGui::Button("Trilinear")) techID = 0 ;// theLattice.setTechnique(0)
-        if (ImGui::Button("Bezier")) techID = 0;// theLattice.setTechnique(1)
-        if (ImGui::Button("Catmull-Rom Spline")) techID = 0;// theLattice.setTechnique(2)
+        if (ImGui::Button("Trilinear")) theLattice.techID = 0 ;// theLattice.setTechnique(0)
+        if (ImGui::Button("Bezier")) theLattice.techID = 0;// theLattice.setTechnique(1)
+        if (ImGui::Button("Catmull-Rom Spline")) theLattice.techID = 0;// theLattice.setTechnique(2)
     ImGui::End();
 
     
@@ -560,7 +560,7 @@ void Application::onCursorPos(double xpos, double ypos) {
             polarrotation.z = glm::acos(glm::dot(uprightX,glm::vec3(1.0f,0.f,0.f)));
             }  else {
 
-                theLattice.getByID(pickID).move(glm::vec2(mousePositionDelta.x/height,mousePositionDelta.y/height),m_rotationMatrix,m_scale,pickDepth);
+                theLattice.getByID(pickID).move(glm::vec2(mousePositionDelta.x/height,mousePositionDelta.y/height),m_rotationMatrix,m_scale,pickDepth); 
 
             }
         }
