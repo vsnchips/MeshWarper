@@ -33,6 +33,7 @@ void Application::init() {
         //CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
         CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
 
+
     // Create a view matrix that positions the camera
     // 10 units behind the object
     glm::mat4 viewMatrix(1);
@@ -150,6 +151,8 @@ void Application::loadObj(const char *filename,cgra::Mesh &targetMesh) {
 }
 
 void Application::drawScene() {
+
+
     // Calculate the aspect ratio of the viewport;
     // width / height
     float aspectRatio = m_viewportSize.x / m_viewportSize.y;
@@ -158,6 +161,7 @@ void Application::drawScene() {
 
     // Set the projection matrix
     m_program.setProjectionMatrix(projectionMatrix);
+    theLattice.latProgram.setProjectionMatrix(projectionMatrix);
 
     m_modelTransform = glm::mat4(1.0f);
 
@@ -179,11 +183,14 @@ void Application::drawScene() {
 
     // Draw the mesh
 
+    theLattice.latProgram.setModelMatrix(m_modelTransform);
     theLattice.draw(m_program,m_modelTransform,m_rotationMatrix,glm::translate(glm::mat4(),m_translation),m_scale);
 
+    m_program.use();
     m_program.setModelMatrix(m_modelTransform);
     m_mesh.draw(GL_TRIANGLES);
-    theLattice.latticeMesh.draw(GL_LINES);
+
+    //theLattice.latticeMesh.draw(GL_LINES);
 
 }
 

@@ -14,6 +14,11 @@ Lattice::Lattice( glm::vec3 min, glm::vec3 max, glm::vec3 res, cgra::Mesh & mark
 int num = (res.x+2)*(res.y+2)*(res.z+2);
 vao = cgra::Matrix<double> (num,3);
 
+latProgram = cgra::Program::load_program(
+        CGRA_SRCDIR "/res/shaders/simple.vs.glsl",
+        //CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
+        CGRA_SRCDIR "/res/shaders/simple.fs.glsl");
+
 /*
 printf("constructing endpoint node array with x: %f y %f z: %f\n", res.x+2, res.y+2, res.z+2 );
 int ind = 0;
@@ -78,36 +83,36 @@ printf("\nlinetotal:%d\n", linetotal);
 
 lineids = cgra::Matrix<unsigned int> (linetotal,2);
 
-int ind = 0;
+int ind = 1;
 int lct = 0;
 for (int i = 1; i < (int)res.x+1; i++) {
 	float x = m_min.x+i*(m_max.x-m_min.x);
 	for (int j = 1; j < (int)res.y+1; j++) {
 		float y = m_min.y+i*(m_max.y-m_min.y);
 		for (int k = 1; k < (int)res.z+1; k++) {
-			if (k<res.z-1) 	{
+			if (k<res.z) 	{
 				lineids.setRow(lct,{ind,ind+1});
 				printf("setting line %d : %d %d\n", lct, ind, ind+1);
 
-			printf("lineids z: %d , %d\n", lineids.m_data[(k+j*res.z+i*res.y*res.z)*2], lineids.m_data[(k+j*res.z+i*res.y*res.z)*2+1]); 
+			//printf("lineids z: %d , %d\n", lineids.m_data[(k+j*res.z+i*res.y*res.z)*2], lineids.m_data[(k+j*res.z+i*res.y*res.z)*2+1]); 
 			
 				 lct++;
 				}
-			if (j<res.y-1) 	{
-				lineids.setRow(lct,{ind,ind+res.z});
-				printf("setting line %d : %d %d\n", lct, ind, ind+1);
-			printf("lineids y: %d\n", lineids.m_data[(k+j*res.z+i*res.y*res.z)*2]); 
+			if (j<res.y) 	{
+				lineids.setRow(lct,{ind,ind+(res.z+2)});
+				//printf("setting line %d : %d %d\n", lct, ind, ind+1);
+			//printf("lineids y: %d\n", lineids.m_data[(k+j*res.z+i*res.y*res.z)*2]); 
 				 lct++;
 				}
-			if (i<res.x-1) 	{
-				lineids.setRow(lct,{ind,ind+res.y*res.z});
-				printf("setting line %d : %d %d\n", lct, ind, ind+1);
-			printf("lineids x: %d\n", lineids.m_data[(k+j*res.z+i*res.y*res.z)*2]); 
+			if (i<res.x) 	{
+				lineids.setRow(lct,{ind,ind+(res.y+2)*(res.z+2)});
+			//	printf("setting line %d : %d %d\n", lct, ind, ind+1);
+			//printf("lineids x: %d\n", lineids.m_data[(k+j*res.z+i*res.y*res.z)*2]); 
 				 lct++;
 				}
 				ind++;
-		} 
-	}
+		} ind+=2;
+	}	ind +=2;
 
  }
 
@@ -263,6 +268,9 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
     	m_nodes[i].draw();
     	}
     }
+
+    latProgram.use();
+    latticeMesh.draw(GL_LINES);
 }
 
 void Lattice::drawForPick(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){

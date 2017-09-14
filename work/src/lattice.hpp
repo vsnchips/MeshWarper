@@ -86,6 +86,8 @@ class Lattice {
 	glm::vec3 m_resolution;
 	cgra::Mesh latticeMesh;
 
+	cgra::Program latProgram;
+
 	int techID;
 
     Lattice();
