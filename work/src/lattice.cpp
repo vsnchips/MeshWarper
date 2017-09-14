@@ -311,3 +311,8 @@ void LatticeNode::draw(){
 	nodeMesh->draw(GL_TRIANGLES);
 	return;
 }
+
+
+cgra::Mesh Lattice::transformMesh(cgra::Mesh inmesh){
+	return cgra::Mesh();
+}

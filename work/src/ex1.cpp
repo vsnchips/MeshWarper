@@ -249,6 +249,10 @@ void Application::doGUI() {
         if (ImGui::Button("Trilinear")) theLattice.techID = 0 ;// theLattice.setTechnique(0)
         if (ImGui::Button("Bezier")) theLattice.techID = 0;// theLattice.setTechnique(1)
         if (ImGui::Button("Catmull-Rom Spline")) theLattice.techID = 0;// theLattice.setTechnique(2)
+        if (ImGui::Button("Reload Shader")) m_program = cgra::Program::load_program(
+        CGRA_SRCDIR "/res/shaders/warpthedragon.vs.glsl",
+        //CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
+        CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");// theLattice.setTechnique(2)
     ImGui::End();
 
     
@@ -304,7 +308,7 @@ void Application::doGUI() {
 
     // MESH LOADING:
 
-    static char dragon[] = "res/models/dragon.obj";
+    static char dragon[] = "res/models/bunny.obj";
 
     static char path[256];
 
@@ -322,93 +326,39 @@ void Application::doGUI() {
             printf("Loading %s \n", path);
 
             loadObj(path,m_mesh);
+        
+     } //endif loading
+    }
 
-            // The CGRA wavefront loader wasnt working for me
+    if(ImGui::Button("Load Dragon")){
 
-            // So I wrote this one:
-            /*
-            std::vector< unsigned int > vertexIndices, uvIndices, normalIndices;
-            std::vector< double > temp_vertices;
-            std::vector< double > temp_uvs;
-            std::vector< double > temp_normals;
+        FILE * file = fopen(path, "r");
+        if( file == NULL ){
+            printf("Impossible to open the file !\n");
+            //return false;
+        }else {
+            printf("Loading %s \n", path);
 
-            float farvert=0; //get the furtherest vertex
-
-            while( 1 ){
-
-                char lineHeader[128];
-                // read the first word of the line
-                int res = fscanf(file, "%s", lineHeader);
-                if (res == EOF)
-                    break;
-
-            if ( strcmp( lineHeader, "v" ) == 0 ){
-                float vertexx;
-                float vertexy;
-                float vertexz;
-                fscanf(file, "%f %f %f\n", &vertexx, &vertexy, &vertexz );
-                temp_vertices.push_back(vertexx);
-                temp_vertices.push_back(vertexy);
-                temp_vertices.push_back(vertexz);
-
-                float len = glm::length(glm::vec3(vertexx,vertexy,vertexz));
-                farvert = len>farvert? len : farvert;
-
-            }else if ( strcmp( lineHeader, "vt" ) == 0 ){
-                float uvx;
-                float uvy;
-                fscanf(file, "%f %f\n", &uvx, &uvy );
-                temp_uvs.push_back(uvx);
-                temp_uvs.push_back(uvy);
-            }else if ( strcmp( lineHeader, "vn" ) == 0 ){
-                float normalx;
-                float normaly;
-                float normalz;
-                fscanf(file, "%f %f %f\n", &normalx, &normaly, &normalz );
-                temp_normals.push_back(normalx);
-                temp_normals.push_back(normaly);
-                temp_normals.push_back(normalz);
-
-            }else if ( strcmp( lineHeader, "f" ) == 0 ){
-                std::string vertex1, vertex2, vertex3;
-                unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
-                //int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
-                int matches = fscanf(file, "%u %u %u\n", &vertexIndex[0], &vertexIndex[1], &vertexIndex[2]);
-                if (matches != 3){
-                    printf("Cant read this .obj");
-                   // return false;
-                }
-                vertexIndices.push_back(vertexIndex[0]);
-                vertexIndices.push_back(vertexIndex[1]);
-                vertexIndices.push_back(vertexIndex[2]);
-                uvIndices    .push_back(uvIndex[0]);
-                uvIndices    .push_back(uvIndex[1]);
-                uvIndices    .push_back(uvIndex[2]);
-                normalIndices.push_back(normalIndex[0]);
-                normalIndices.push_back(normalIndex[1]);
-                normalIndices.push_back(normalIndex[2]);
-
-            }
-
-
-        }
-
-            cgra::Matrix<double> verts(temp_vertices.size()/3,3);
-            for(unsigned int i =0; i < temp_vertices.size()/3; i++) verts.setRow(i,{temp_vertices[i*3],temp_vertices[i*3+1],temp_vertices[i*3+2]});
-
-            cgra::Matrix<unsigned int> faces(vertexIndices.size()/3,3);
-            for(unsigned int i=0; i< vertexIndices.size()/3;i++) faces.setRow(i,{vertexIndices[i*3]-1,vertexIndices[i*3+1]-1,vertexIndices[i*3+2]-1});
-
-
-            int numVertices  = temp_vertices.size()/3;
-            int numTriangles = vertexIndices.size()/3;
-            printf("Verts %u, Tris %u,\n", numVertices, numTriangles);
-
-     m_mesh.maxdist = farvert;
-     m_mesh.setData(verts,faces);*/
-
+            loadObj("res/models/dragon.obj",m_mesh);
+        
      } //endif loading
     }//endif textinput
+
+    if(ImGui::Button("Load Bunny")){
+
+        FILE * file = fopen(path, "r");
+        if( file == NULL ){
+            printf("Impossible to open the file !\n");
+            //return false;
+        }else {
+            printf("Loading %s \n", path);
+
+            loadObj("res/models/bunny.obj",m_mesh);
+        
+     } //endif loading
+    }//endif textinput
+
+
 
     if(ImGui::Button("Load Cube")) createCube();
 
