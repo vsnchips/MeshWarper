@@ -197,8 +197,8 @@ void Lattice::makeVSArray(){
     	//translation*=glm::affineInverse(rotationmat);
     	translation*=glm::affineInverse(rotationmat);
     	glm::vec4 p4 = glm::vec4(p.x,p.y,p.z,1);
-    	p4 = translation * p4;
-    	p = glm::vec3(p4.x,p4.y,p4.z);
+    	//p4 = translation * p4;
+    	p = glm::vec3(p4.x+dydx.x,p4.y+dydx.y,p4.z);
         printf("move object by x %fy %fz %f\n", translation[3][0], translation[3][1], translation[3][2]);
 
     }
