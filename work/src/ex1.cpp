@@ -31,7 +31,7 @@ void Application::init() {
     m_program = cgra::Program::load_program(
         CGRA_SRCDIR "/res/shaders/simple.vs.glsl",
         //CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
-        CGRA_SRCDIR "/res/shaders/simple.fs.glsl");
+        CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
 
     // Create a view matrix that positions the camera
     // 10 units behind the object
@@ -159,7 +159,7 @@ void Application::drawScene() {
     // Set the projection matrix
     m_program.setProjectionMatrix(projectionMatrix);
 
-    glm::mat4 modelTransform(1.0f);
+    m_modelTransform = glm::mat4(1.0f);
 
     /************************************************************
      * 3. Manual Transforms                                     *
@@ -171,17 +171,17 @@ void Application::drawScene() {
      *    `glm::scale`                                          *
      ************************************************************/
 
-    modelTransform *= glm::translate(glm::mat4(),m_translation);
-    modelTransform *= glm::scale(modelTransform,glm::vec3(m_scale));
+    m_modelTransform *= glm::translate(glm::mat4(),m_translation);
+    m_modelTransform *= glm::scale(m_modelTransform,glm::vec3(m_scale));
     m_rotationMatrix = glm::mat4(glm::vec4(xax,0),glm::vec4(yax,0),glm::vec4(zax,0),glm::vec4(0.f,0.f,0.f,1.f));
-    modelTransform *= m_rotationMatrix;
+    m_modelTransform *= m_rotationMatrix;
 
-    m_program.setModelMatrix(modelTransform);
 
     // Draw the mesh
 
-    theLattice.draw(m_program,modelTransform,m_rotationMatrix,glm::translate(glm::mat4(),m_translation),m_scale);
+    theLattice.draw(m_program,m_modelTransform,m_rotationMatrix,glm::translate(glm::mat4(),m_translation),m_scale);
 
+    m_program.setModelMatrix(m_modelTransform);
     m_mesh.draw(GL_TRIANGLES);
     theLattice.latticeMesh.draw(GL_LINES);
 
@@ -427,6 +427,16 @@ void Application::onMouseButton(int button, int action, int) {
 
     if (button >=0 && button < 3) {
         // Set the 'down' state for the appropriate mouse button
+        if (button ==0){
+            if( action == GLFW_PRESS) {
+                pickID = pickTest();
+                clickon = pickID > 0;
+                printf("clickon %s\n" , clickon ? "true" : "false");
+            }
+            else {clickon = false;
+                printf("unclick\n");
+            }
+        }
         m_mouseButtonDown[button] = action == GLFW_PRESS;
     }
 }
@@ -455,15 +465,15 @@ void Application::onCursorPos(double xpos, double ypos) {
 
        if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_LEFT]) {
 
-
-        if (click == false) pickID = pickTest();   //If its a new click, test for picking
-        if (pickID == 0){
-
-           click = true;
            static int width, height;
            glfwGetWindowSize(m_window, &width, &height);
 
            int size = glm::min(width,height);
+
+        //if (click == false) pickID = pickTest();   //If its a new click, test for picking
+        if (pickID == 0){
+
+           click = true;
 
                fclick = glm::vec2(-1+2*m_mousePosition.x/width,-1+2*m_mousePosition.y/height);
                sxa = xax;
@@ -549,7 +559,8 @@ void Application::onCursorPos(double xpos, double ypos) {
             // Get the Z angle
             polarrotation.z = glm::acos(glm::dot(uprightX,glm::vec3(1.0f,0.f,0.f)));
             }  else {
-                theLattice.getByID(pickID).move(mousePositionDelta,m_rotationMatrix,m_scale);
+                
+                theLattice.getByID(pickID).move(glm::vec2(mousePositionDelta.x/height,mousePositionDelta.y/height),m_rotationMatrix,m_scale);
 
             }
         }
@@ -595,15 +606,22 @@ glClearColor(0, 0, 0, 1);
 glClearDepth(1);
 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
     // Setting the variable before drawing
 // Set to -1 if NOT color picking
-for (int i=0; i<theLattice.m_nodes.size();i++){
+/*for (int i=0; i<theLattice.m_nodes.size();i++){
     int colorID = theLattice.m_nodes[i].ojID;
     GLuint loc = glGetUniformLocation(
     m_program.glName(), "gColor");
     glUniform1i(loc, colorID);
     theLattice.m_nodes[i].draw();
-}
+}*/
+theLattice.drawForPick(m_program,
+                                        m_modelTransform,
+                                        m_rotationMatrix,
+                                        glm::translate(glm::mat4(),m_translation),
+                                        m_scale);
+
 
 // Reading in after drawing
 unsigned char pixel[4];
@@ -611,6 +629,8 @@ glReadPixels(m_mousePosition.x,
 m_viewportSize.y - m_mousePosition.y, 1, 1,   GL_RGBA,   GL_UNSIGNED_BYTE,   &pixel);
 int pickedID = pixel[0]; // Use this to select vertex
 
+//glfwSwapBuffers(m_window);
+printf("Picked id %d\n", pickedID );
 return pickedID;
 
-};
+}

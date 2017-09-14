@@ -32,11 +32,15 @@ public:
 	int techID;
 	bool selected;
 
+	bool isEnd;
+
 	LatticeNode();
 	//~LatticeNode();
 	LatticeNode(int k, glm::vec3(p));
 
 	cgra::Mesh * nodeMesh;
+	glm::mat4 myTransform;
+
 	void draw();
     void setID(int id);
 
@@ -102,6 +106,7 @@ class Lattice {
 	void click(float mouseX, float mouseY);
 
 	void draw(cgra::Program,glm::mat4,glm::mat4,glm::mat4,float);
+	void drawForPick(cgra::Program,glm::mat4,glm::mat4,glm::mat4,float);
 
 
 };

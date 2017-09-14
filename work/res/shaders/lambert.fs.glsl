@@ -1,14 +1,14 @@
 
 #version 150 core
 
-int gColor;
+uniform int gColor;
 
 out vec4 color;
 
 in vec3 fragPosition;
 in vec3 fragNormal;
 
-const vec3 lightDir = vec3(0.1, 0.1, -1.0);
+const vec3 lightDir = vec3(0.1, 0.1, -1);
 
 const vec3 ambientColor = vec3(0.3, 0.3, 0.3);
 const vec3 diffuseColor = vec3(0.4, 0.4, 1.0);
@@ -29,7 +29,7 @@ void main() {
     vec3 lightDir = normalize(-lightDir);
 
     float lambertian = max(dot(lightDir,normal), 0.0);
-    lambertian = 1;
+    //lambertian = 1;
     float specular = 0.0;
 
     if (lambertian > 0.0) {
@@ -38,13 +38,12 @@ void main() {
         vec3 halfDir = normalize(lightDir + viewDir);
         float specAngle = max(dot(halfDir, normal), 0.0);
 
-        specular = pow(specAngle, shininess);
+        //specular = pow(specAngle, shininess);
     }
 
     vec3 fragColor = ambientColor +
         lambertian * diffuseColor +
-        specular * specColor +0.5;
+        specular * specColor;
 
-    //color = vec4(fragColor, 1.0);
-    color = vec4(1.0);
+    color = vec4(fragColor, 1.0);
 }

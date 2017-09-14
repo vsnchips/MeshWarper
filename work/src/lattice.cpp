@@ -1,4 +1,4 @@
-
+ 
 #include "lattice.hpp"
 #include "glm/gtc/matrix_inverse.hpp"
 
@@ -47,12 +47,16 @@ for (int i = -1; i < (int)res.x+1; i++) {
 			LatticeNode node = LatticeNode(ind,glm::vec3(  x  ,  y  ,  min.z+(max.z-min.z)*k/(res.z-1)   ));
 			m_nodes.push_back(node); // m_nodes is a vector, needs no matrix dimensions.
 			m_nodes.back().nodeMesh = &markmesh;
+			m_nodes.back().isEnd = (i < 0 || i > res.x || j < 0 || j > res.y || k < 0 || k > res.z);
+
 
 			printf("setting mesh row %d %f %f %f \n", ind, (double)x , (double)y  ,  (double)(min.z+(max.z-min.z)*k/(res.z-1))  );
 			vao.setRow(ind,{(double)x,(double)y,(double)(min.z+(max.z-min.z)*k/(res.z-1))});
 
 			//printf("vao x: %f\n", vao.m_data[(k+j*res.z+i*res.y*res.z)*2]); 
 			ind++;
+
+
 		} 
 	} // Initial points set
 }
@@ -189,17 +193,25 @@ void Lattice::makeVSArray(){
 
     void LatticeNode::move(glm::vec2 dydx, glm::mat4 rotationmat, float m_scale){
 
-    	glm::mat4 translation = glm::translate(glm::mat4(1./m_scale), glm::vec3(dydx.x,dydx.y,0));
+    	glm::mat4 translation = glm::translate(glm::mat4(1), glm::vec3(dydx.x,dydx.y,0));
+    	//translation*=glm::affineInverse(rotationmat);
     	translation*=glm::affineInverse(rotationmat);
     	glm::vec4 p4 = glm::vec4(p.x,p.y,p.z,1);
     	p4 = translation * p4;
     	p = glm::vec3(p4.x,p4.y,p4.z);
+        printf("move object by x %fy %fz %f\n", translation[3][0], translation[3][1], translation[3][2]);
 
     }
 
 void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){
+
+    GLuint loc = glGetUniformLocation(
+    m_program.glName(), "gColor");
+    glUniform1i(loc,-1);
+
 	for(int i = 0; i <m_nodes.size(); i++){
 
+		if (!m_nodes[i].isEnd){
     glm::mat4 markerTransform(1.0f);
 
 
@@ -207,7 +219,7 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
 		glm::vec4 tp = glm::vec4(0.3*p.x*m_scale,0.3*p.y*m_scale,0.3*p.z*m_scale,0);
 	
 		glm::mat4 nodeTransform(1.0f);
-		
+
 	markerTransform *= nodeTransform;
 	markerTransform *= glm::scale(markerTransform,glm::vec3(0.3));
 
@@ -217,8 +229,55 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
 
 		nodeTransform*=modTransform;
    		m_program.setModelMatrix(nodeTransform);
+
+/*Color Picking
+    //int colorID = m_nodes[i].ojID;
+   		int colorID = i;
+    glUniform1i(loc, colorID);
+    */
+
+    	m_nodes[i].draw();
+    	}
+    }
+}
+
+void Lattice::drawForPick(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){
+
+
+    GLuint loc = glGetUniformLocation(
+    m_program.glName(), "gColor");
+
+	for(int i = 0; i <m_nodes.size(); i++){
+
+    glm::mat4 markerTransform(1.0f);
+
+
+		glm::vec3 p = m_nodes[i].p;
+		glm::vec4 tp = glm::vec4(0.3*p.x*m_scale,0.3*p.y*m_scale,0.3*p.z*m_scale,0);
+	
+		glm::mat4 nodeTransform(1.0f);  
+
+	markerTransform *= nodeTransform;
+	markerTransform *= glm::scale(markerTransform,glm::vec3(0.3));
+
+		tp = rotMat * tp;
+		nodeTransform *= glm::translate(glm::mat4(20),glm::vec3(tp.x,tp.y,tp.z));
+		nodeTransform *= glm::scale(markerTransform,glm::vec3(0.3));
+
+		nodeTransform*=modTransform;
+   		m_program.setModelMatrix(nodeTransform);
+
+//Color Picking
+    int colorID = m_nodes[i].ojID;
+    GLuint loc = glGetUniformLocation(
+    m_program.glName(), "gColor");
+    glUniform1i(loc, colorID);
+
+
     	m_nodes[i].draw();
     }
+
+    glUniform1i(loc,-1);
 }
 
 void LatticeNode::draw(){

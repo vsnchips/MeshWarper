@@ -17,7 +17,7 @@ public:
     Lattice theLattice;
     
     bool sceneon;
-    int pickID;
+    int pickID; 
     /////////////////////////////////////////// Part 1 Vars
     // The window object managed by GLFW
     GLFWwindow *m_window;
@@ -38,13 +38,15 @@ public:
     // The scale of the mesh
     float m_scale;
 
+    int pickNode;
+
     // A 4x4 matrix representing the rotation of the
     // mesh,
     // And a vec3 with the z/y/x/ coords.
 
     glm::vec3 xax,yax,zax;
     glm::vec3 polarrotation;
-    glm::mat4 m_rotationMatrix;
+    glm::mat4 m_rotationMatrix,m_modelTransform;
 
     // Whether or not the left, middle or right buttons are down.
     bool m_mouseButtonDown[3];
