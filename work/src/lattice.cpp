@@ -158,9 +158,9 @@ void LatticeNode::setID(int id){
 }
 
 void Lattice::makeVSArray(){
-	int mx = (techID==2)?m_resolution.x:m_resolution.x+2;
-	int my = (techID==2)?m_resolution.y:m_resolution.y+2;
-	int mz = (techID==2)?m_resolution.z:m_resolution.z+2; 
+	int mx = (techID!=2)?m_resolution.x:m_resolution.x+2;
+	int my = (techID!=2)?m_resolution.y:m_resolution.y+2;
+	int mz = (techID!=2)?m_resolution.z:m_resolution.z+2; 
 	if (techID==2){
 		for (int i=0; i < mx; i++){
 			for (int j=0; j < my; j++){
@@ -312,6 +312,12 @@ void LatticeNode::draw(){
 	return;
 }
 
+void Lattice::setTechnique(int tech,cgra::Program m_program){
+	techID = tech;
+    GLuint loc = glGetUniformLocation(
+    m_program.glName(), "uTechID");
+    glUniform1i(loc,techID);
+}
 
 cgra::Mesh Lattice::transformMesh(cgra::Mesh inmesh){
 	return cgra::Mesh();

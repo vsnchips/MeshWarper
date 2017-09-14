@@ -110,6 +110,7 @@ class Lattice {
 	void draw(cgra::Program,glm::mat4,glm::mat4,glm::mat4,float);
 	void drawForPick(cgra::Program,glm::mat4,glm::mat4,glm::mat4,float);
 
+	void setTechnique(int tech,cgra::Program m_program);
 
 	cgra::Mesh transformMesh(cgra::Mesh inmesh);
 
