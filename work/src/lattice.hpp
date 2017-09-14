@@ -72,10 +72,11 @@ public:
 };
 
 class Lattice {
+	
+	public:
 
 	cgra::Matrix<double> vao = cgra::Matrix<double>(0,3);
 	cgra::Matrix<unsigned int> lineids = cgra::Matrix<unsigned int>(0,2);
-	public:
 
 	std::vector<LatticeNode> m_nodes;
 	//std::vector<LatticeNode> m_end_nodes;

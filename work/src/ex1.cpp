@@ -30,6 +30,7 @@ void Application::init() {
     // have to run the program from a specific folder.
     m_program = cgra::Program::load_program(
         CGRA_SRCDIR "/res/shaders/warpthedragon.vs.glsl",
+        //CGRA_SRCDIR "/res/shaders/simple.vs.glsl",
         //CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
         CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
 
@@ -159,9 +160,6 @@ void Application::drawScene() {
     // Calculate the projection matrix with a field-of-view of 45 degrees
     glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 20.0f);
 
-    // Set the projection matrix
-    m_program.setProjectionMatrix(projectionMatrix);
-    theLattice.latProgram.setProjectionMatrix(projectionMatrix);
 
     m_modelTransform = glm::mat4(1.0f);
 
@@ -181,16 +179,33 @@ void Application::drawScene() {
     m_modelTransform *= m_rotationMatrix;
 
 
+    glm::mat4 viewMatrix(1);
+    viewMatrix[3] = glm::vec4(0, 0, -1, 1);
+
+    //Draw the Lattice
     // Draw the mesh
+    theLattice.latProgram.use();
+
+    theLattice.latProgram.setViewMatrix(viewMatrix);
 
     theLattice.latProgram.setModelMatrix(m_modelTransform);
-    theLattice.draw(m_program,m_modelTransform,m_rotationMatrix,glm::translate(glm::mat4(),m_translation),m_scale);
+    theLattice.latProgram.setProjectionMatrix(projectionMatrix);
+    theLattice.draw(theLattice.latProgram,m_modelTransform,m_rotationMatrix,glm::translate(glm::mat4(),m_translation),m_scale);
 
+
+
+    // Draw the mesh
     m_program.use();
+    
+    GLuint loc = glGetUniformLocation(
+    m_program.glName(), "gColor");
+    glUniform1i(loc,-1);
+
+    m_program.setViewMatrix(viewMatrix);
+    m_program.setProjectionMatrix(projectionMatrix);
     m_program.setModelMatrix(m_modelTransform);
     m_mesh.draw(GL_TRIANGLES);
 
-    //theLattice.latticeMesh.draw(GL_LINES);
 
 }
 
@@ -265,7 +280,7 @@ void Application::doGUI() {
     
     ImGui::Begin("Lattice");
         static bool s;
-       // if(ImGui::Checkbox("drawScene?",&s)) sceneon=s;
+        if(ImGui::Checkbox("drawScene?",&s)) sceneon=s;
 
         static glm::vec3 latres;
         static int lx,ly,lz;
@@ -518,10 +533,16 @@ void Application::onCursorPos(double xpos, double ypos) {
             }  else {
 
                 theLattice.getByID(pickID).move(glm::vec2(mousePositionDelta.x/height,mousePositionDelta.y/height),m_rotationMatrix,m_scale,pickDepth); 
+                theLattice.vao.setRow(pickID,{  theLattice.getByID(pickID).p.x  ,
+                                                theLattice.getByID(pickID).p.y  ,
+                                                theLattice.getByID(pickID).p.z }); 
+                theLattice.setMesh();
 
-            }
+            } 
+
         }
 
+        
 
      if (m_mouseButtonDown[GLFW_MOUSE_BUTTON_MIDDLE]) {
          static int width, height;
@@ -573,7 +594,7 @@ glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUniform1i(loc, colorID);
     theLattice.m_nodes[i].draw();
 }*/
-theLattice.drawForPick(m_program,
+theLattice.drawForPick(theLattice.latProgram,
                                         m_modelTransform,
                                         m_rotationMatrix,
                                         glm::translate(glm::mat4(),m_translation),
@@ -587,6 +608,8 @@ m_viewportSize.y - m_mousePosition.y, 1, 1,   GL_RGBA,   GL_UNSIGNED_BYTE,   &pi
 glReadPixels(m_mousePosition.x,
 m_viewportSize.y - m_mousePosition.y, 1, 1,   GL_DEPTH_BUFFER_BIT,   GL_FLOAT,   &pickDepth);
 int pickedID = pixel[0]; // Use this to select vertex
+
+m_program.use();
 
 //glfwSwapBuffers(m_window);
 printf("Picked id %d\n", pickedID );

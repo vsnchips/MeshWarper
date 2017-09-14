@@ -19,22 +19,9 @@ latProgram = cgra::Program::load_program(
         //CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
         CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
 
-/*
-printf("constructing endpoint node array with x: %f y %f z: %f\n", res.x+2, res.y+2, res.z+2 );
-int ind = 0;
-for (int i = 0; i < (int)res.x+2; i++) {
-	float x = min.x+(i-1)*(max.x-min.x)/(res.x-1);
-	for (int j = 0; j < (int)res.y+2; j++) {
-		float y = min.y+(j-1)*(max.y-min.y)/(res.y-1);
-		for (int k = 0; k < (int)res.z+2; k++) {
-			// Create a LatticeNode
-			// and add it to m_nodes
-			LatticeNode node = LatticeNode(ind,glm::vec3(  x  ,  y  ,  min.z+(max.z-min.z)*(k-1)/(res.z-1)   ));
-			m_end_nodes.push_back(node);
-			ind++;
-		} 
-	} // Initial points set
-}*/
+glm::mat4 viewMatrix(1);
+viewMatrix[3] = glm::vec4(0, 0, -1, 1);
+latProgram.setViewMatrix(viewMatrix);
 
 
 
@@ -83,39 +70,6 @@ printf("\nlinetotal:%d\n", linetotal);
 
 lineids = cgra::Matrix<unsigned int> (linetotal,2);
 
-/*
-int ind = 1;
-int lct = 0;
-for (int i = 1; i < (int)res.x+1; i++) {
-	float x = m_min.x+i*(m_max.x-m_min.x);
-	for (int j = 1; j < (int)res.y+1; j++) {
-		float y = m_min.y+i*(m_max.y-m_min.y);
-		for (int k = 1; k < (int)res.z+1; k++) {
-			if (k<res.z) 	{
-				lineids.setRow(lct,{ind,ind+1});
-				printf("setting line %d : %d %d\n", lct, ind, ind+1);
-
-			//printf("lineids z: %d , %d\n", lineids.m_data[(k+j*res.z+i*res.y*res.z)*2], lineids.m_data[(k+j*res.z+i*res.y*res.z)*2+1]); 
-			
-				 lct++;
-				}
-			if (j<res.y) 	{
-				lineids.setRow(lct,{ind,ind+(res.z+2)});
-				//printf("setting line %d : %d %d\n", lct, ind, ind+1);
-			//printf("lineids y: %d\n", lineids.m_data[(k+j*res.z+i*res.y*res.z)*2]); 
-				 lct++;
-				}
-			if (i<res.x) 	{
-				lineids.setRow(lct,{ind,ind+(res.y+2)*(res.z+2)});
-			//	printf("setting line %d : %d %d\n", lct, ind, ind+1);
-			//printf("lineids x: %d\n", lineids.m_data[(k+j*res.z+i*res.y*res.z)*2]); 
-				 lct++;
-				}
-				ind++;
-		} ind+=2;
-	}	ind +=2;
-
- }*/
 
 int ind = 0;
 int lct = 0;
@@ -240,8 +194,8 @@ void Lattice::makeVSArray(){
     	dydx.x/=m_scale;
     	dydx.y/=m_scale;
 
-    	dydx.x*=depth;
-    	dydx.y*=depth;
+    	dydx.x*=depth*2;
+    	dydx.y*=depth*2;
 
     	//glm::vec4 tvec = glm::vec4(dydx.x,dydx.y,0,1);
     	//tvec *= glm::inverse(rotationmat);
@@ -267,13 +221,14 @@ void Lattice::makeVSArray(){
     	p = glm::vec3(p4.x,p4.y,p4.z);
         printf("move object by x %fy %fz %f\n", TranslationMatrix[3][0], TranslationMatrix[3][1], TranslationMatrix[3][2]);
 
+
     }
 
-void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){
+void Lattice::draw(cgra::Program useProgram,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){
 
-    latProgram.use();
+    useProgram.use();
     GLuint loc = glGetUniformLocation(
-    latProgram.glName(), "gColor");
+    useProgram.glName(), "gColor");
     glUniform1i(loc,-1);
 
 	for(int i = 0; i <m_nodes.size(); i++){
@@ -296,7 +251,7 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
 		nodeTransform *= glm::scale(markerTransform,glm::vec3(1));
 
 		nodeTransform*=modTransform;
-   		latProgram.setModelMatrix(nodeTransform);
+   		useProgram.setModelMatrix(nodeTransform);
 
 /*Color Picking
     //int colorID = m_nodes[i].ojID;
@@ -312,16 +267,16 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
     latticeMesh.draw(GL_LINES);
 }
 
-void Lattice::drawForPick(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){
+void Lattice::drawForPick(cgra::Program useProgram,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){
 
-
-     GLuint loc = glGetUniformLocation(
-    m_program.glName(), "gColor");
+    useProgram.use();
+	GLuint loc = glGetUniformLocation(
+    useProgram.glName(), "gColor");
     glUniform1i(loc,-1);
 
 	for(int i = 0; i <m_nodes.size(); i++){
 
-		//if (!m_nodes[i].isEnd){
+		if (!m_nodes[i].isEnd && techID!= 2)
 		{
     glm::mat4 markerTransform(1.0f);
 
@@ -336,22 +291,22 @@ void Lattice::drawForPick(cgra::Program m_program,glm::mat4 modTransform,glm::ma
 
 		tp = rotMat * tp;
 		nodeTransform *= glm::translate(glm::mat4(20),glm::vec3(tp.x,tp.y,tp.z));
-		nodeTransform *= glm::scale(markerTransform,glm::vec3(0.3));
+		nodeTransform *= glm::scale(markerTransform,glm::vec3(1));
 
 		nodeTransform*=modTransform;
-   		m_program.setModelMatrix(nodeTransform);
+   		useProgram.setModelMatrix(nodeTransform);
 
 //Color Picking
     int colorID = m_nodes[i].ojID;
     GLuint loc = glGetUniformLocation(
-    m_program.glName(), "gColor");
+    useProgram.glName(), "gColor");
     glUniform1i(loc, colorID);
 
 
     	m_nodes[i].draw();
     }
 
-    glUniform1i(loc,-1);
+    glUniform1i(loc,255);
   }
 }
 
