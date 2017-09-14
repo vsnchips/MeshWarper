@@ -254,7 +254,7 @@ void Application::doGUI() {
     
     ImGui::Begin("Lattice");
         static bool s;
-        if(ImGui::Checkbox("drawScene?",&s)) sceneon=s;
+       // if(ImGui::Checkbox("drawScene?",&s)) sceneon=s;
 
         static glm::vec3 latres;
         static int lx,ly,lz;

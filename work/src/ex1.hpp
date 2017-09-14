@@ -21,7 +21,7 @@ public:
     int deformTechniqueId;
     Lattice theLattice;
     
-    bool sceneon;
+    bool sceneon =1;
     int pickID; 
 
     int pickNode;
