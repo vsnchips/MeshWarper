@@ -234,6 +234,8 @@ void Lattice::makeVSArray(){
 
 void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){
 
+    latProgram.use();
+    
     GLuint loc = glGetUniformLocation(
     m_program.glName(), "gColor");
     glUniform1i(loc,-1);
@@ -269,7 +271,6 @@ void Lattice::draw(cgra::Program m_program,glm::mat4 modTransform,glm::mat4 rotM
     	}
     }
 
-    latProgram.use();
     latticeMesh.draw(GL_LINES);
 }
 
