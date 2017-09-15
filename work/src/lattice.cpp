@@ -113,7 +113,10 @@ void Lattice::setMesh(){
 	//latticeMesh.setData(verts,cgra::Matrix<unsigned int> foo);
 	//cgra::Matrix<unsigned int> 
 	latticeMesh.setData(vao,lineids);
+
+	
 	printf("mesh Set!\n");
+
 }
 
 
@@ -153,37 +156,20 @@ void LatticeNode::setID(int id){
         nodeMesh->setID(id);
 }
 
-void Lattice::makeVSArray(){
-	int mx = (techID!=2)?m_resolution.x:m_resolution.x+2;
-	int my = (techID!=2)?m_resolution.y:m_resolution.y+2;
-	int mz = (techID!=2)?m_resolution.z:m_resolution.z+2; 
-	if (techID==2){
-		for (int i=0; i < mx; i++){
-			for (int j=0; j < my; j++){
-				for (int k=0; k < mz; k++){
-						if (k<1) { 
-						VSArray[3*i*mz*my + j*mz + k] = getNode(i,j,k).p.x;
-					}
-						VSArray[3*i*mz*my + j*mz + k] = getNode(i,j,k).p.x;
-						VSArray[3*i*mz*my + j*mz + k +1] = getNode(i,j,k).p.y;
-						VSArray[3*i*mz*my + j*mz + k +2] = getNode(i,j,k).p.z;
-						}
-				   
+void Lattice::VSArraytoUniform(cgra::Program program){
 
-				}
-			}
-		}else{
-		for (int i=1; i < mx+1; i++){
-			for (int j=1; j < my+1; j++){
-				for (int k=1; k < mz+1; k++){
-					if (techID=2)
-						VSArray[3*i*mz*my + j*mz + k] = getNode(i,j,k).p.x;
-						VSArray[3*i*mz*my + j*mz + k +1] = getNode(i,j,k).p.y;
-						VSArray[3*i*mz*my + j*mz + k +2] = getNode(i,j,k).p.z;
-					}
-				}
-			}
-		}
+	//GLfloat floatArray[3072] ;
+	for (int i = 0; i< 3*( m_resolution.x+2) * 
+						(m_resolution.y+2) *
+						(m_resolution.z+2); i++)
+	{
+		VSArray[i*3] = m_nodes[i].p.x;
+		VSArray[i*3+1] = m_nodes[i].p.y;
+		VSArray[i*3+2] = m_nodes[i].p.z;
+	}
+
+	int location = glGetUniformLocation(program, "latticeVerts");
+	glUniform1fv(location, 3072, VSArray);
 }
 
 

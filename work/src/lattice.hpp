@@ -2,7 +2,7 @@
 
 #pragma once
 
-#define MAX_LATTICE_VS_ARRAYSIZE 1000
+#define MAX_LATTICE_VS_ARRAYSIZE 3072
 
 #include <algorithm>
 #include <cmath>
@@ -80,7 +80,10 @@ class Lattice {
 
 	std::vector<LatticeNode> m_nodes;
 	//std::vector<LatticeNode> m_end_nodes;
-	float VSArray[MAX_LATTICE_VS_ARRAYSIZE];
+	GLfloat VSArray[MAX_LATTICE_VS_ARRAYSIZE];
+
+
+	GLfloat floatArray[3072] ;
 
 	glm::vec3 m_min;
 	glm::vec3 m_max;
@@ -106,7 +109,7 @@ class Lattice {
 
 	//cgra::mesh result(cgra:mesh before); 
 
-	void makeVSArray();
+	void VSArraytoUniform(cgra::Program);
 	void connectLines();
 	void click(float mouseX, float mouseY);
 
