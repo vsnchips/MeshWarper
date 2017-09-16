@@ -37,50 +37,57 @@ vec3 getVecfromArray(int x, int y, int z){
 
 }
 
-vec3 interpolate(float t,vec3 spline[MAX_SPLINESIZE], int res){
-	
-	//if (uTechID == 0) { //Linear Interpolate
+// Computes n CHOOSE k
+// ( n )
+// ( k )
+int binco( int n, int k )
+{
+  // must accumulate nums/dens separately
+  // to avoid roundoff error
+  int count = 1;
+  int d = 1;
+  for( int i = 1 ; i <= k ; i++ )
+  {
+    count *= ( n - k + i ) ;
+    d *= i ;
+  }
+  return count/d ;
+}
 
-		//int id = int(floor(min(t,0.999)*float(res-1.0)));
-		//int id = int(floor(t));
+
+
+vec3 spline(float t,vec3 spline[MAX_SPLINESIZE], int res){
+	
+	//if (uTechID == 1)// Bezier;
+	{
+		//ITERATIVE DE-CASTLEJAU
+
+		int i = res -1;
+		while (i >0){
+			for (int j=0; j<=i; j++){
+				spline[j] = mix (spline[j],spline[j+1],t);
+
+		} i--;
+	}
+
+		return spline[0];
+
+	}
+
+
+	//Linear Interpolate
+
 		int id = int(floor(t*(res-1)));
 		
 		vec3 p0 = spline[id];
 		vec3 p1 = spline[id+1];
 		
-		/*if (t<0.5){
-			 p0 = spline[0];
-			 p1 = spline[1];
-		}else {
-			 p0 = spline[1];
-			 p1 = spline[2];
-		}/*else{
-			 p0 = spline[2];
-			 p1 = spline[3];
-		}*/
 
-		//float tsub = (t*float(res))-float(floor(t*float(res)));
 		float tsub = (res-1)*mod(t,1./(res-1));
-		//return vec3(tsub);
-		 return tsub*p1+(1.-tsub)*p0; //+ vec3(sin(tsub*10));
-		 //return vec3(mod(t*4,2));
-		//}
-	//else if(uTechID == 2){ //Bezier
-
-
-	//}else return vec3(0);
+		 //return tsub*p1+(1.-tsub)*p0; 
+		return mix (p0,p1,tsub);
 
 }
-
-
-		/*for(int i = 0; i < xres-1; i++){
-			for(int j = 0; j < yres-1; j++){
-				for(int k = 0; k < zres-1; k++){
-					if 
-				}
-			}	
-		}
-	}  */
 
 
 vec3 pointfromVolume(vec3 t, int xr, int yr, int zr) {
@@ -97,14 +104,14 @@ vec3 pointfromVolume(vec3 t, int xr, int yr, int zr) {
 					atomicSpline[k] = getVecfromArray(i,j,k);
 				}// build a spline for this patchpoint
 	
-				patchSpline[j] = interpolate(t.z,atomicSpline,zr);  // Z axis lerp
+				patchSpline[j] = spline(t.z,atomicSpline,zr);  // Z axis lerp
 		}//build a patch spline
 
-		volumeSpline[i] = interpolate(t.y, patchSpline,yr);   // Y axis lerp
+		volumeSpline[i] = spline(t.y, patchSpline,yr);   // Y axis lerp
 
 	}// get a patchvec3 mySpline[MAX_SPLINESIZE];
 
-	return interpolate(t.x,volumeSpline,xr);
+	return spline(t.x,volumeSpline,xr);
 
 	}
 
