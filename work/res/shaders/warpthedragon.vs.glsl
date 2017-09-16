@@ -137,21 +137,12 @@ void main() {
 	vec3 span = meshmax-meshorigin;
 
 	vec3 sample = (vertPosition-meshorigin)/span;
-	//sample = (vertPosition-meshorigin)/15;
-
-	//vec3 dimension = vec(xsize,ysize,zsize);
-	//vec3 dimension = vec3(4.0,3.0,2.0);
 
 	vec3 volumePosition = pointfromVolume(sample,xres,yres,zres);
 
 	vec3 finalPos = vertPosition + latticeVerts[41];
 
-	/// Splines all the way down, behbeh
-
-
-	//newPosition.yz += testWiggle.yz;// + vec3(sin(gl_Position*5.));
-	//newPosition.x = testWiggle.x;
-
+	/// Splines all the way down
 
 	// Standard projworldmodel transformations;
     gl_Position = projectionMat * viewMat * modelMat * vec4(volumePosition, 1);
@@ -162,5 +153,3 @@ void main() {
     mat3 normalMat = transpose(inverse(mat3(viewMat * modelMat)));
     fragNormal = normalMat * vertNormal;
 }
-
-	//vec3 volumePosition = pointfromVolume(vertPosition,latticeVerts,xres,yres,zres);
