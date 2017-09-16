@@ -2,7 +2,9 @@
 
 #pragma once
 
-#define MAX_LATTICE_VS_ARRAYSIZE 3072
+#define MAX_LATTICE_VS_ARRAYSIZE 960
+#define MAX_MESHARRAYSIZE 960
+#define MAX_SPLINESIZE 20
 
 #include <algorithm>
 #include <cmath>
@@ -80,19 +82,21 @@ class Lattice {
 
 	std::vector<LatticeNode> m_nodes;
 	//std::vector<LatticeNode> m_end_nodes;
-	GLfloat VSArray[MAX_LATTICE_VS_ARRAYSIZE];
-
-
-	GLfloat floatArray[3072] ;
+	float VSArray[MAX_LATTICE_VS_ARRAYSIZE*3];
 
 	glm::vec3 m_min;
 	glm::vec3 m_max;
 	glm::vec3 m_resolution;
+	
 	cgra::Mesh latticeMesh;
+	cgra::Mesh warpMesh;
 
 	cgra::Program latProgram;
 
 	int techID;
+	bool GPUwarp;
+
+	bool showEnds = true;
 
     Lattice();
 
@@ -103,9 +107,6 @@ class Lattice {
     LatticeNode &getByID(int id);
 
 	void setMesh();
-
-	std::vector<float> points;
-	int xsegs, ysegs , zsegs;
 
 	//cgra::mesh result(cgra:mesh before); 
 
@@ -119,8 +120,17 @@ class Lattice {
 	void setTechnique(int tech,cgra::Program m_program);
 
 	cgra::Mesh transformMesh(cgra::Mesh inmesh);
+	cgra::Mesh makeWarpMesh( cgra::Mesh & refMesh);
 
 
 };
+
+// Warper functions
+
+glm::vec3 interpolate(float t,glm::vec3 spline[], int res, int uTechID);
+
+glm::vec3 pointfromVolume(glm::vec3 t, int xres, int yres, int zres, Lattice &someLattice);
+
+glm::vec3 pointfromPatch(glm::vec2 t, glm::vec3 patch[MAX_SPLINESIZE*MAX_SPLINESIZE], int yr, int zr);
 
 //#endif

@@ -10,10 +10,15 @@ namespace cgra {
                        const Matrix<unsigned int> &triangles) {
         // Check to make sure that the number of columns in `vertices`
         // and `triangles` is correct
+
+
+
+
         if (vertices.numCols() != 3) {
             throw std::out_of_range("`vertices` should have 3 columns");
         }
 
+                
         /*
         if (triangles.numCols() != 3) {
             throw std::out_of_range("`triangles` should have 3 columns");

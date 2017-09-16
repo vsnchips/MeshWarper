@@ -54,6 +54,7 @@ void Application::init() {
 
     // Create the cube mesh
     createCube();
+    generate_Lattice();
 
     //Load the sphereobj;
     loadObj("res/models/sphere.obj",m_spheremesh);
@@ -101,6 +102,7 @@ void Application::createCube() {
 
     m_mesh.maxdist = sqrt(3);
     m_mesh.setData(vertices, triangles);
+    generate_Lattice();
 }
 
 void Application::loadObj(const char *filename,cgra::Mesh &targetMesh) {
@@ -148,6 +150,8 @@ void Application::loadObj(const char *filename,cgra::Mesh &targetMesh) {
     targetMesh.maxdist = obj.range;
     targetMesh.setData(vertices, triangles);
 
+    theLattice.makeWarpMesh(targetMesh);
+
 
 }
 
@@ -158,7 +162,7 @@ void Application::drawScene() {
     // width / height
     float aspectRatio = m_viewportSize.x / m_viewportSize.y;
     // Calculate the projection matrix with a field-of-view of 45 degrees
-    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 20.0f);
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
 
 
     m_modelTransform = glm::mat4(1.0f);
@@ -196,7 +200,7 @@ void Application::drawScene() {
 
     // Draw the mesh
     m_program.use();
-    
+
     GLuint loc = glGetUniformLocation(
     m_program.glName(), "gColor");
     glUniform1i(loc,-1);
@@ -204,10 +208,35 @@ void Application::drawScene() {
     m_program.setViewMatrix(viewMatrix);
     m_program.setProjectionMatrix(projectionMatrix);
     m_program.setModelMatrix(m_modelTransform);
+    if (!theLattice.GPUwarp) theLattice.warpMesh.draw(GL_TRIANGLES);
     m_mesh.draw(GL_TRIANGLES);
 
 
 }
+
+void Application::generate_Lattice(){
+
+
+            glm::vec3 min = glm::vec3(m_mesh.m_vertices[0].m_position.x , m_mesh.m_vertices[0].m_position.y , m_mesh.m_vertices[0].m_position.z ) ;
+            glm::vec3 max = glm::vec3(m_mesh.m_vertices[0].m_position.x , m_mesh.m_vertices[0].m_position.y , m_mesh.m_vertices[0].m_position.z ) ;
+
+            printf("Set first min/max\n");
+            printf("numVertices %i\n", m_mesh.m_vertices.size());
+
+            for (int i = 0; i<m_mesh.m_vertices.size(); i++){
+                printf("checking vertex %i\n", i);
+                min = glm::min(min, glm::vec3(m_mesh.m_vertices[i].m_position.x , m_mesh.m_vertices[i].m_position.y , m_mesh.m_vertices[i].m_position.z ));
+                max = glm::max(max, glm::vec3(m_mesh.m_vertices[i].m_position.x , m_mesh.m_vertices[i].m_position.y , m_mesh.m_vertices[i].m_position.z ));
+            }
+
+
+            //printf("Found min/max\n Min: %f %f %f \n Max: %f %f %f", min.x, min.y, min.z, max.x, max.y, max.z);
+
+            theLattice = Lattice(min,max, glm::vec3(lx,ly,lz),m_spheremesh);
+
+            //printf("x: %f y %f z: %f\n", theLattice.m_resolution.x, theLattice.m_resolution.y, theLattice.m_resolution.z);
+}
+
 
 void Application::doGUI() {
     ImGui::SetNextWindowSize(ImVec2(250, 250), ImGuiSetCond_FirstUseEver);
@@ -271,10 +300,25 @@ void Application::doGUI() {
         if (ImGui::Button("Trilinear")) theLattice.techID = 0 ;// theLattice.setTechnique(0)
         if (ImGui::Button("Bezier")) theLattice.techID = 0;// theLattice.setTechnique(1)
         if (ImGui::Button("Catmull-Rom Spline")) theLattice.techID = 0;// theLattice.setTechnique(2)
-        if (ImGui::Button("Reload Shader")) m_program = cgra::Program::load_program(
+        if (ImGui::Button("Reload Shader")){
+         m_program = cgra::Program::load_program(
         CGRA_SRCDIR "/res/shaders/warpthedragon.vs.glsl",
         //CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
-        CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");// theLattice.setTechnique(2)
+        CGRA_SRCDIR "/res/shaders/lambert.fs.glsl");
+
+         GLint *params;
+         //glGetShaderiv(GL_COMPILE_STATUS);
+         //printf("%s shader compilation\n", (params == GL_TRUE) ? "Succeeded" : "FAILED" );
+
+         glGetProgramiv(m_program.glName(),GL_LINK_STATUS,params);
+
+         printf("%s program linking\n", (*params == GL_TRUE) ? "Succeeded" : "FAILED" );
+         }
+        // theLattice.setTechnique(2)
+        static bool gpuw;
+        static bool showEnds=true;
+        if(ImGui::Checkbox("Deform Using CPU or GPU?",&gpuw)) theLattice.GPUwarp=gpuw;
+        if(ImGui::Checkbox("Show end controls?",&showEnds)) theLattice.showEnds=showEnds;
     ImGui::End();
 
     
@@ -283,33 +327,13 @@ void Application::doGUI() {
         if(ImGui::Checkbox("drawScene?",&s)) sceneon=s;
 
         static glm::vec3 latres;
-        static int lx,ly,lz;
-        ImGui::SliderInt("Lattice X", &lx, 0, 10);
-        ImGui::SliderInt("Lattice Y", &ly, 0, 10);
-        ImGui::SliderInt("Lattice Z", &lz, 0, 10);
+        //static int lx,ly,lz;
+        ImGui::SliderInt("Lattice X", &lx, 2, 10);
+        ImGui::SliderInt("Lattice Y", &ly, 2, 10);
+        ImGui::SliderInt("Lattice Z", &lz, 2, 10);
 
         if (ImGui::Button("Generate Lattice")){
-
-
-            glm::vec3 min = glm::vec3(m_mesh.m_vertices[0].m_position.x , m_mesh.m_vertices[0].m_position.y , m_mesh.m_vertices[0].m_position.z ) ;
-            glm::vec3 max = glm::vec3(m_mesh.m_vertices[0].m_position.x , m_mesh.m_vertices[0].m_position.y , m_mesh.m_vertices[0].m_position.z ) ;
-
-            printf("Set first min/max\n");
-            printf("numVertices %i\n", m_mesh.m_vertices.size());
-
-            for (int i = 0; i<m_mesh.m_vertices.size(); i++){
-                printf("checking vertex %i\n", i);
-                min = glm::min(min, glm::vec3(m_mesh.m_vertices[i].m_position.x , m_mesh.m_vertices[i].m_position.y , m_mesh.m_vertices[i].m_position.z ));
-                max = glm::max(max, glm::vec3(m_mesh.m_vertices[i].m_position.x , m_mesh.m_vertices[i].m_position.y , m_mesh.m_vertices[i].m_position.z ));
-            }
-
-
-            //printf("Found min/max\n Min: %f %f %f \n Max: %f %f %f", min.x, min.y, min.z, max.x, max.y, max.z);
-
-            theLattice = Lattice(min,max, glm::vec3(lx,ly,lz),m_spheremesh);
-
-            //printf("x: %f y %f z: %f\n", theLattice.m_resolution.x, theLattice.m_resolution.y, theLattice.m_resolution.z);
-
+            generate_Lattice();
             }
     
          // theLattice.setTechnique(0)
@@ -362,6 +386,7 @@ void Application::doGUI() {
             printf("Loading %s \n", path);
 
             loadObj("res/models/dragon.obj",m_mesh);
+            generate_Lattice();
         
      } //endif loading
     }//endif textinput
@@ -376,6 +401,7 @@ void Application::doGUI() {
             printf("Loading %s \n", path);
 
             loadObj("res/models/bunny.obj",m_mesh);
+            generate_Lattice();
         
      } //endif loading
     }//endif textinput
@@ -537,7 +563,8 @@ void Application::onCursorPos(double xpos, double ypos) {
                                                 theLattice.getByID(pickID).p.y  ,
                                                 theLattice.getByID(pickID).p.z }); 
                 theLattice.setMesh();
-
+                theLattice.VSArraytoUniform(m_program);
+                if(!theLattice.GPUwarp)theLattice.makeWarpMesh(m_mesh);
             } 
 
         }

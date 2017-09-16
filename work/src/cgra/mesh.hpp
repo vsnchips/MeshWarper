@@ -35,6 +35,11 @@ namespace cgra {
         // fourth triangles.
         std::vector<unsigned int> m_indices;
 
+
+
+        Matrix<double> * vertSourceMat;
+        Matrix<unsigned int> * triSourceMat;
+
        float maxdist;
 
         // Whether or not to draw this mesh as a wireframe

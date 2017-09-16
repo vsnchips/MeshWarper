@@ -113,7 +113,6 @@ void Lattice::setMesh(){
 	//latticeMesh.setData(verts,cgra::Matrix<unsigned int> foo);
 	//cgra::Matrix<unsigned int> 
 	latticeMesh.setData(vao,lineids);
-
 	
 	printf("mesh Set!\n");
 
@@ -158,20 +157,53 @@ void LatticeNode::setID(int id){
 
 void Lattice::VSArraytoUniform(cgra::Program program){
 
+	static int tick = 0;
+	tick++;
+ 	VSArray[0] += 0.3*sin(tick*0.01);
+
 	//GLfloat floatArray[3072] ;
-	for (int i = 0; i< 3*( m_resolution.x+2) * 
+	for (int i = 0; i < (m_resolution.x+2) * 
 						(m_resolution.y+2) *
 						(m_resolution.z+2); i++)
 	{
-		VSArray[i*3] = m_nodes[i].p.x;
-		VSArray[i*3+1] = m_nodes[i].p.y;
-		VSArray[i*3+2] = m_nodes[i].p.z;
+
+		/*VSArray[i*3] = (float)*(vao[i,0]);
+		VSArray[i*3+1] =(float)*(vao[i,1]);
+		VSArray[i*3+2] = (float)*(vao[i,2]);*/
+		VSArray[i*3] = getByID(i).p.x;
+ 		VSArray[i*3+1] = getByID(i).p.y;
+ 		VSArray[i*3+2] = getByID(i).p.z;	
 	}
 
-	int location = glGetUniformLocation(program, "latticeVerts");
-	glUniform1fv(location, 3072, VSArray);
-}
+	printf("latticeNode.p 41: %f %f %f\n", getByID(41).p.x,
+									 getByID(41).p.y,
+									 getByID(41).p.z);
 
+	printf("vao 42: %f %f %f\n", *vao[42,0],
+									 *vao[42,1],
+									 *vao[42,2]);
+	printf("vsarray 42: %f %f %f\n", VSArray[42*3],
+									 VSArray[42*3+1],
+									 VSArray[42*3+2]);
+
+	//Set uniforms
+	int location = glGetUniformLocation(program.glName(), "latticeVerts");
+	//glUniform3fv(location, MAX_LATTICE_VS_ARRAYSIZE, glm::value_ptr(VSArray[0]));
+	glUniform3fv(location, MAX_LATTICE_VS_ARRAYSIZE, &VSArray[0]);
+	location = glGetUniformLocation(program.glName(), "xres");
+	glUniform1i(location, m_resolution.x);
+	location = glGetUniformLocation(program.glName(), "yres");
+	glUniform1i(location, m_resolution.y);
+	location = glGetUniformLocation(program.glName(), "zres");
+	glUniform1i(location, m_resolution.z);
+
+	location = glGetUniformLocation(program.glName(), "meshorigin");
+	glUniform3fv(location, 1, (GLfloat*)&m_min);
+
+	location = glGetUniformLocation(program.glName(), "meshmax");
+	glUniform3fv(location,1, (GLfloat*)&m_max);
+
+}
 
     void LatticeNode::move(glm::vec2 dydx, glm::mat4 rotationmat, float m_scale, float depth){
 
@@ -219,7 +251,7 @@ void Lattice::draw(cgra::Program useProgram,glm::mat4 modTransform,glm::mat4 rot
 
 	for(int i = 0; i <m_nodes.size(); i++){
 
-		if (!m_nodes[i].isEnd && techID!= 2)
+		if ((!m_nodes[i].isEnd && techID!= 2)||showEnds)
 		{
     glm::mat4 markerTransform(1.0f);
 
@@ -262,7 +294,7 @@ void Lattice::drawForPick(cgra::Program useProgram,glm::mat4 modTransform,glm::m
 
 	for(int i = 0; i <m_nodes.size(); i++){
 
-		if (!m_nodes[i].isEnd && techID!= 2)
+		if ((!m_nodes[i].isEnd && techID!= 2)||showEnds)
 		{
     glm::mat4 markerTransform(1.0f);
 
@@ -311,3 +343,202 @@ void Lattice::setTechnique(int tech,cgra::Program m_program){
 cgra::Mesh Lattice::transformMesh(cgra::Mesh inmesh){
 	return cgra::Mesh();
 }
+
+cgra::Mesh Lattice::makeWarpMesh( cgra::Mesh &refMesh){
+
+	warpMesh = cgra::Mesh(refMesh);
+int vcount = refMesh.m_vertices.size();
+
+	cgra::Matrix<double> newVertices(vcount,3);
+	printf("refmesh %i\n", vcount);
+
+	glm::vec3 grab = refMesh.m_vertices[vcount/2].m_position;
+	printf("median vertex %f %f %f\n", grab.x,grab.y,grab.z);
+	for (int i = 0 ; i < refMesh.m_vertices.size(); i++){
+		grab = refMesh.m_vertices[i].m_position;
+		//grab = pointfromVolume(grab, m_resolution.x, m_resolution.y, m_resolution.z, *(this));
+
+		newVertices.setRow(i, {grab.x, grab.y, grab.z});
+
+	}
+
+	// copy more indices, again.. (Why??????)
+	cgra::Matrix<unsigned int> moreIndices(refMesh.m_indices.size()/3,3);
+	for (int i = 0 ; i < moreIndices.numRows(); i++){
+		moreIndices.setRow(i,{  refMesh.m_indices[i*3],
+								refMesh.m_indices[i*3+1],
+								refMesh.m_indices[i*3+2] });
+	}
+
+	warpMesh.setData(newVertices,moreIndices);
+
+	return warpMesh;
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////warper////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+
+
+glm::vec3 interpolate(float t,glm::vec3 spline[], int res, int uTechID){
+	
+	if (uTechID == 0) { //Linear Interpolate
+
+		//int id = int(floor(min(t,0.999)*float(res-1.0)));
+		//int id = int(floor(t));
+		int id = int(floor(t*res));
+		/*
+		vec3 p0 = spline[id];
+		vec3 p1 = spline[id+1];*/
+		glm::vec3 p0,p1;
+		if (t<0.33333){
+			 p0 = spline[0];
+			 p1 = spline[1];
+		}else if (t<0.6666){
+			 p0 = spline[1];
+			 p1 = spline[2];
+		}else{
+			 p0 = spline[2];
+			 p1 = spline[3];
+		}
+
+//		float tsub = (res-1)*glm::mod(t,1./(res-1));
+		float tsub = t * (res-1) - glm::floor(t * (res-1));//
+
+		//return vec3(tsub);
+		return glm::vec3(tsub*p1.x+(1.-tsub)*p0.x, //+ vec3(sin(tsub*10));
+		 					tsub*p1.y+(1.-tsub)*p0.y,
+		 					tsub*p1.z+(1.-tsub)*p0.z);
+		 //return vec3(mod(t*4,2));
+		}
+	else if(uTechID == 2){ //Bezier
+
+
+	}
+
+    return glm::vec3(0);
+
+}
+
+
+		/*for(int i = 0; i < xres-1; i++){
+			for(int j = 0; j < yres-1; j++){
+				for(int k = 0; k < zres-1; k++){s
+					if 
+				}
+			}	
+		}
+	}  */
+
+
+glm::vec3 pointfromVolume(glm::vec3 t, int xres, int yres, int zres, Lattice & someLattice) {
+
+	glm::vec3 volumeSpline[MAX_SPLINESIZE];
+	
+	for (int i = 0; i <  xres; i++){         // X AXIS
+		
+		glm::vec3 patchSpline[MAX_SPLINESIZE];
+			for (int j = 0; j <  yres; j++){
+
+				glm::vec3 atomicSpline[MAX_SPLINESIZE];
+				for (int k = 0; k < zres; k++) {
+					atomicSpline[k] = someLattice.getNode(i,j,k).p;
+				}// build a spline for this patchpoint
+	
+				patchSpline[i] = interpolate(t.y,atomicSpline,zres,0);  // Z axis lerp
+		}//build a patch spline
+
+		volumeSpline[i] = interpolate(t.x, patchSpline,yres,0);   // Y axis lerp
+
+	}// get a patchvec3 mySpline[MAX_SPLINESIZE];
+
+	return interpolate(t.x,volumeSpline,xres,0);
+
+	printf("volpoint!\n");
+	}
+
+glm::vec3 pointfromPatch(glm::vec2 t, glm::vec3 patch[MAX_SPLINESIZE*MAX_SPLINESIZE], int yr, int zr){
+
+	glm::vec3 mySpline[MAX_SPLINESIZE];
+	
+	for (int i = 0; i <  yr; i++){
+	glm::vec3 zSpline[MAX_SPLINESIZE];
+		for (int j = 0; j < zr; j++) {
+			zSpline[j] = patch[i*zr+j];
+		}// build a spline for this patchpoint
+	
+	mySpline[i] = interpolate(t.y,zSpline,zr,0);
+	}//build a patch spline
+
+	return interpolate(t.x, mySpline,yr,0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

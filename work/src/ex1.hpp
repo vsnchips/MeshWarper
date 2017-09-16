@@ -26,7 +26,11 @@ public:
 
     int pickNode;
 
+
+    int lx = 2,ly = 2,lz = 2;
+
     float pickDepth=1;
+
     /////////////////////////////////////////// Part 1 Vars
     // The window object managed by GLFW
     GLFWwindow *m_window;
@@ -92,5 +96,7 @@ public:
 
     int pickTest(float mX, float mY);
     int pickTest();
+
+    void generate_Lattice();
 
 };
