@@ -18,6 +18,8 @@ uniform vec3 latticeVerts[MAX_MESHARRAYSIZE];
 
 uniform int uTechID;
 
+uniform float uCatRomLooseNess = 0.2;
+
 uniform int xres;
 uniform int yres;
 uniform int zres;
@@ -32,34 +34,13 @@ out vec3 fragNormal;
 vec3 getVecfromArray(int x, int y, int z){
 	int i = (z+1)+ (zres+2)*(y+1) + (zres+2)*(yres+2)*(x+1); 
 	return latticeVerts[i];
-				//latticeYVerts[i],				latticeZVerts[i]);
-
-
 }
 
-// Computes n CHOOSE k
-// ( n )
-// ( k )
-int binco( int n, int k )
-{
-  // must accumulate nums/dens separately
-  // to avoid roundoff error
-  int count = 1;
-  int d = 1;
-  for( int i = 1 ; i <= k ; i++ )
-  {
-    count *= ( n - k + i ) ;
-    d *= i ;
-  }
-  return count/d ;
+vec3 cubicBezier( float t,vec3 p0, vec3 p1, vec3 p2, vec3 p3){
+	return pow(1-t,3)*p0 + 3*pow(1-t,2)*pow(t,1)*p1 + 3*pow(1-t,1)*pow(t,2)*p2 + pow(t,3)*p3;
 }
-
-
-
-vec3 spline(float t,vec3 spline[MAX_SPLINESIZE], int res){
-	
-	//if (uTechID == 1)// Bezier;
-	{
+vec3 deCasteljau(float t, vec3 spline[MAX_SPLINESIZE], int res)
+	  {
 		//ITERATIVE DE-CASTLEJAU
 
 		int i = res -1;
@@ -68,11 +49,43 @@ vec3 spline(float t,vec3 spline[MAX_SPLINESIZE], int res){
 				spline[j] = mix (spline[j],spline[j+1],t);
 
 		} i--;
-	}
+	  }
 
 		return spline[0];
 
 	}
+
+
+vec3 cubicHermite (float t,vec3 p0, vec3 p1, vec3 p2, vec3 p3, float loose){
+
+	vec3 herm[MAX_SPLINESIZE];
+		herm[0]= p1;
+		herm[1]= p1 + loose*(p2-p0);
+		herm[2]=p2 + loose*(p1-p3);
+		herm[3]=p2;
+	//return cubicBezier(
+
+	return deCasteljau(t, herm,4);
+}
+//CatMul Rom
+vec3 CatMullRom(float t,vec3 spline[MAX_SPLINESIZE], int segments){
+		int id = int(floor(t*segments)); // pick a segment
+		float tsub = (segments)*mod(t,1./(segments));
+		return cubicHermite( tsub, spline[id],spline[id+1],spline[id+2],spline[id+3], uCatRomLooseNess);
+
+}
+
+
+
+vec3 spline(float t,vec3 spline[MAX_SPLINESIZE], int res){
+	
+	//if (uTechID == 2 )
+	{
+		return CatMullRom(t, spline, res -3);
+	}
+
+	//if (uTechID == 1)// Bezier;
+		return deCasteljau(t,spline,res);
 
 
 	//Linear Interpolate
@@ -94,22 +107,26 @@ vec3 pointfromVolume(vec3 t, int xr, int yr, int zr) {
 
 	vec3 volumeSpline[MAX_SPLINESIZE];
 	
-	for (int i = 0; i < xr; i++){         // X AXIS
+	int s = 0;
+	//if (uTechID==2)
+	{ s=-1; xr+=2; yr+=2; zr+=2;}
+	
+	for (int i = s; i < xr+s; i++){         // X AXIS
 		
 		vec3 patchSpline[MAX_SPLINESIZE];
-			for (int j = 0; j < yr; j++){
+			for (int j = s; j < yr+s; j++){
 
 				vec3 atomicSpline[MAX_SPLINESIZE];
-				for (int k = 0; k < zr; k++) {
-					atomicSpline[k] = getVecfromArray(i,j,k);
+				for (int k = s; k < zr+s; k++) {
+					atomicSpline[k-s] = getVecfromArray(i,j,k);
 				}// build a spline for this patchpoint
 	
-				patchSpline[j] = spline(t.z,atomicSpline,zr);  // Z axis lerp
+				patchSpline[j-s] = spline(t.z,atomicSpline,zr);  // Z axis lerp
 		}//build a patch spline
 
-		volumeSpline[i] = spline(t.y, patchSpline,yr);   // Y axis lerp
+		volumeSpline[i-s] = spline(t.y, patchSpline,yr);   // Y axis lerp
 
-	}// get a patchvec3 mySpline[MAX_SPLINESIZE];
+	}// build a volumetric spline;
 
 	return spline(t.x,volumeSpline,xr);
 
@@ -118,6 +135,7 @@ vec3 pointfromVolume(vec3 t, int xr, int yr, int zr) {
 void main() {
 
 	vec3 span = meshmax-meshorigin;
+
 	vec3 sample = 0.99*(vertPosition-meshorigin)/span;
 	//sample = (vertPosition-meshorigin)/15;
 
