@@ -1,6 +1,7 @@
  
 #include "lattice.hpp"
 #include "glm/gtc/matrix_inverse.hpp"
+#include "glm/gtc/integer.hpp"
 
 
 Lattice::Lattice(){};
@@ -24,6 +25,10 @@ viewMatrix[3] = glm::vec4(0, 0, -1, 1);
 latProgram.setViewMatrix(viewMatrix);
 
 
+
+span = glm::vec3(max.x-min.x,max.y-min.y,max.z-min.z);
+
+handleSize = glm::length(span)*0.1;
 
 printf("constructing mesh with x: %f y %f z: %f\n", res.x+2, res.y+2, res.z+2 );
 int ind = 0;
@@ -71,6 +76,7 @@ printf("\nlinetotal:%d\n", linetotal);
 lineids = cgra::Matrix<unsigned int> (linetotal,2);
 
 
+
 int ind = 0;
 int lct = 0;
 for (int i = 0; i < (int)res.x+2; i++) {
@@ -109,19 +115,12 @@ for (int i = 0; i < (int)res.x+2; i++) {
 
 }
 void Lattice::setMesh(){
-//
-	//latticeMesh.setData(verts,cgra::Matrix<unsigned int> foo);
-	//cgra::Matrix<unsigned int> 
+
 	latticeMesh.setData(vao,lineids);
 	
 	printf("mesh Set!\n");
 
 }
-
-
-
-
-
 
 LatticeNode &Lattice::getNode(
 int x, int y, int z) {
@@ -130,6 +129,10 @@ int x, int y, int z) {
 if ( x>m_resolution.x || y>m_resolution.y || z>m_resolution.z ) printf("\n Lattice node array out of bounds - will now segfault");;
 return m_nodes[x*m_resolution.y*m_resolution.z+y+m_resolution.z+z];
 
+}
+
+int Lattice::getFullSize(){
+	return (m_resolution.x+2)*(m_resolution.y+2)*(m_resolution.z+2);
 }
 
 LatticeNode &Lattice::getEndNode(
@@ -166,10 +169,6 @@ void Lattice::VSArraytoUniform(cgra::Program program){
 						(m_resolution.y+2) *
 						(m_resolution.z+2); i++)
 	{
-
-		/*VSArray[i*3] = (float)*(vao[i,0]);
-		VSArray[i*3+1] =(float)*(vao[i,1]);
-		VSArray[i*3+2] = (float)*(vao[i,2]);*/
 		VSArray[i*3] = getByID(i).p.x;
  		VSArray[i*3+1] = getByID(i).p.y;
  		VSArray[i*3+2] = getByID(i).p.z;	
@@ -188,7 +187,6 @@ void Lattice::VSArraytoUniform(cgra::Program program){
 
 	//Set uniforms
 	int location = glGetUniformLocation(program.glName(), "latticeVerts");
-	//glUniform3fv(location, MAX_LATTICE_VS_ARRAYSIZE, glm::value_ptr(VSArray[0]));
 	glUniform3fv(location, MAX_LATTICE_VS_ARRAYSIZE, &VSArray[0]);
 	location = glGetUniformLocation(program.glName(), "xres");
 	glUniform1i(location, m_resolution.x);
@@ -212,14 +210,10 @@ void Lattice::VSArraytoUniform(cgra::Program program){
     	dydx.x/=m_scale;
     	dydx.y/=m_scale;
 
-    	dydx.x*=depth*2;
-    	dydx.y*=depth*2;
+    	dydx.x*=depth*3;
+    	dydx.y*=depth*3;
 
-    	//glm::vec4 tvec = glm::vec4(dydx.x,dydx.y,0,1);
-    	//tvec *= glm::inverse(rotationmat);
-
-//    	glm::mat4 rotationTranslationMatrix = glm::translate(glm::inverse(rotationmat), glm::vec3(dydx.x,dydx.y,0));
-    	glm::vec4 transvec(dydx.x,-dydx.y,0,1);
+		glm::vec4 transvec(dydx.x,-dydx.y,0,1);
 
     	transvec = glm::inverse(rotationmat) * transvec;
 
@@ -245,37 +239,38 @@ void Lattice::VSArraytoUniform(cgra::Program program){
 void Lattice::draw(cgra::Program useProgram,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){
 
     useProgram.use();
-    GLuint loc = glGetUniformLocation(
-    useProgram.glName(), "gColor");
-    glUniform1i(loc,-1);
+    GLuint loc = glGetUniformLocation(useProgram.glName(), "gColor");
+
+    GLfloat idColor[4];
+    
+    idColor[0] = 255;
+    idColor[1] = 255;
+    idColor[2] = 255;
+    idColor[3] = 1.0;
+    glUniform4fv(loc, 1, idColor);
 
 	for(int i = 0; i <m_nodes.size(); i++){
 
-		if ((!m_nodes[i].isEnd && techID!= 2)||showEnds)
+		if (!m_nodes[i].isEnd||showEnds)
 		{
     glm::mat4 markerTransform(1.0f);
 
 
 		glm::vec3 p = m_nodes[i].p;
-		glm::vec4 tp = glm::vec4(p.x*m_scale,p.y*m_scale,p.z*m_scale,0);
+		glm::vec4 tp = glm::vec4(1.3*p.x*m_scale,1.3*p.y*m_scale,1.3*p.z*m_scale,1.);
+		//glm::vec4 tp = glm::vec4(p.x,p.y,p.z,1.);
 	
 		glm::mat4 nodeTransform(1.0f);
 
 	markerTransform *= modelTrans;
-	markerTransform *= glm::scale(markerTransform,glm::vec3(0.3));
+	markerTransform *= glm::scale(markerTransform,glm::vec3(1));
 
 		tp = rotMat * tp;
-		nodeTransform *= glm::translate(glm::mat4(20),glm::vec3(tp.x,tp.y,tp.z));
-		nodeTransform *= glm::scale(markerTransform,glm::vec3(1));
+		nodeTransform *= glm::translate(glm::mat4(1),glm::vec3(tp.x,tp.y,tp.z));
+		nodeTransform *= glm::scale(markerTransform,glm::vec3(handleSize));
 
 		nodeTransform*=modTransform;
    		useProgram.setModelMatrix(nodeTransform);
-
-/*Color Picking
-    //int colorID = m_nodes[i].ojID;
-   		int colorID = i;
-    glUniform1i(loc, colorID);
-    */
 
     	m_nodes[i].draw();
     	}
@@ -287,44 +282,54 @@ void Lattice::draw(cgra::Program useProgram,glm::mat4 modTransform,glm::mat4 rot
 
 void Lattice::drawForPick(cgra::Program useProgram,glm::mat4 modTransform,glm::mat4 rotMat, glm::mat4 modelTrans,float m_scale  ){
 
-    useProgram.use();
-	GLuint loc = glGetUniformLocation(
+     useProgram.use();
+    GLuint loc = glGetUniformLocation(
     useProgram.glName(), "gColor");
     glUniform1i(loc,-1);
 
+
+   	GLfloat idColor[4];
 	for(int i = 0; i <m_nodes.size(); i++){
 
-		if ((!m_nodes[i].isEnd && techID!= 2)||showEnds)
+		if (!m_nodes[i].isEnd||showEnds)
 		{
     glm::mat4 markerTransform(1.0f);
 
 
 		glm::vec3 p = m_nodes[i].p;
-		glm::vec4 tp = glm::vec4(p.x*m_scale,p.y*m_scale,p.z*m_scale,0);
+		glm::vec4 tp = glm::vec4(1.3*p.x*m_scale,1.3*p.y*m_scale,1.3*p.z*m_scale,1.);
+		//glm::vec4 tp = glm::vec4(p.x,p.y,p.z,1.);
 	
 		glm::mat4 nodeTransform(1.0f);
 
 	markerTransform *= modelTrans;
-	markerTransform *= glm::scale(markerTransform,glm::vec3(0.3));
+	markerTransform *= glm::scale(markerTransform,glm::vec3(1));
 
 		tp = rotMat * tp;
-		nodeTransform *= glm::translate(glm::mat4(20),glm::vec3(tp.x,tp.y,tp.z));
-		nodeTransform *= glm::scale(markerTransform,glm::vec3(1));
+		nodeTransform *= glm::translate(glm::mat4(1),glm::vec3(tp.x,tp.y,tp.z));
+		nodeTransform *= glm::scale(markerTransform,glm::vec3(handleSize));
 
 		nodeTransform*=modTransform;
    		useProgram.setModelMatrix(nodeTransform);
 
 //Color Picking
-    int colorID = m_nodes[i].ojID;
+	idColor[0] = glm::mod(float(m_nodes[i].ojID),float(256));
+	idColor[1] = floor(glm::mod(float(m_nodes[i].ojID),float(256*256))/256.0f);
+    idColor[2] = m_nodes[i].ojID/float(256*256);
+    idColor[3] = 1.0;
     GLuint loc = glGetUniformLocation(
     useProgram.glName(), "gColor");
-    glUniform1i(loc, colorID);
+    glUniform4fv(loc, 1, idColor);
 
 
     	m_nodes[i].draw();
     }
 
-    glUniform1i(loc,255);
+    idColor[0] = 255;
+    idColor[1] = 255;
+    idColor[2] = 255;
+    idColor[3] = 1.0;
+    glUniform4fv(loc, 1, idColor);
   }
 }
 

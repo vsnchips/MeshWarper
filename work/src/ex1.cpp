@@ -59,6 +59,20 @@ void Application::init() {
     //Load the sphereobj;
     loadObj("res/models/sphere.obj",m_spheremesh);
 
+
+    printf("setting brush color uniform\n");
+    GLfloat idColor[4];
+
+    idColor[0] = 255;
+    idColor[1] = 255;
+    idColor[2] = 255;
+    idColor[3] = 1.0;
+    GLuint loc = glGetUniformLocation(
+    m_program.glName(), "gColor");
+    glUniform4fv(loc, 1, idColor);
+    printf("brush color uniform set\n");
+
+
 }
 
 void Application::createCube() {
@@ -201,9 +215,14 @@ void Application::drawScene() {
     // Draw the mesh
     m_program.use();
 
+    GLfloat idColor[4];   //WHITE
+    idColor[0] = 255;
+    idColor[1] = 255;
+    idColor[2] = 255;
+    idColor[3] = 1.0;
     GLuint loc = glGetUniformLocation(
     m_program.glName(), "gColor");
-    glUniform1i(loc,-1);
+    glUniform4fv(loc, 1, idColor);
 
     m_program.setViewMatrix(viewMatrix);
     m_program.setProjectionMatrix(projectionMatrix);
@@ -297,9 +316,9 @@ void Application::doGUI() {
     };
 
     ImGui::Begin("Deformations");
-        if (ImGui::Button("Trilinear")) theLattice.techID = 0 ;// theLattice.setTechnique(0)
-        if (ImGui::Button("Bezier")) theLattice.techID = 0;// theLattice.setTechnique(1)
-        if (ImGui::Button("Catmull-Rom Spline")) theLattice.techID = 0;// theLattice.setTechnique(2)
+        if (ImGui::Button("Trilinear")) theLattice.setTechnique(0,m_program) ;// theLattice.setTechnique(0)
+        if (ImGui::Button("Bezier")) theLattice.setTechnique(1,m_program);// theLattice.setTechnique(1)
+        if (ImGui::Button("Catmull-Rom Spline")) theLattice.setTechnique(2,m_program);// theLattice.setTechnique(2)
         if (ImGui::Button("Reload Shader")){
          m_program = cgra::Program::load_program(
         CGRA_SRCDIR "/res/shaders/warpthedragon.vs.glsl",
@@ -313,10 +332,13 @@ void Application::doGUI() {
          glGetProgramiv(m_program.glName(),GL_LINK_STATUS,params);
 
          printf("%s program linking\n", (*params == GL_TRUE) ? "Succeeded" : "FAILED" );
+         
+         theLattice.VSArraytoUniform(m_program);
+
          }
         // theLattice.setTechnique(2)
-        static bool gpuw;
-        static bool showEnds=true;
+        static bool gpuw = true;
+        static bool showEnds;
         if(ImGui::Checkbox("Deform Using CPU or GPU?",&gpuw)) theLattice.GPUwarp=gpuw;
         if(ImGui::Checkbox("Show end controls?",&showEnds)) theLattice.showEnds=showEnds;
     ImGui::End();
@@ -328,9 +350,9 @@ void Application::doGUI() {
 
         static glm::vec3 latres;
         //static int lx,ly,lz;
-        ImGui::SliderInt("Lattice X", &lx, 2, 10);
-        ImGui::SliderInt("Lattice Y", &ly, 2, 10);
-        ImGui::SliderInt("Lattice Z", &lz, 2, 10);
+        ImGui::SliderInt("Lattice X", &lx, 2, 20);
+        ImGui::SliderInt("Lattice Y", &ly, 2, 20);
+        ImGui::SliderInt("Lattice Z", &lz, 2, 20);
 
         if (ImGui::Button("Generate Lattice")){
             generate_Lattice();
@@ -338,6 +360,11 @@ void Application::doGUI() {
     
          // theLattice.setTechnique(0)
     ImGui::End();
+
+    ImGui::Begin("Gui Tweaking");
+        ImGui::SliderFloat("Handle Size", &theLattice.handleSize, 0, 1);
+    ImGui::End();
+    
 
 
     /*
@@ -469,7 +496,7 @@ void Application::onCursorPos(double xpos, double ypos) {
            int size = glm::min(width,height);
 
         //if (click == false) pickID = pickTest();   //If its a new click, test for picking
-        if (pickID == 0){
+        if (pickID == -1){
 
            click = true;
 
@@ -558,13 +585,15 @@ void Application::onCursorPos(double xpos, double ypos) {
             polarrotation.z = glm::acos(glm::dot(uprightX,glm::vec3(1.0f,0.f,0.f)));
             }  else {
 
-                theLattice.getByID(pickID).move(glm::vec2(mousePositionDelta.x/height,mousePositionDelta.y/height),m_rotationMatrix,m_scale,pickDepth); 
-                theLattice.vao.setRow(pickID,{  theLattice.getByID(pickID).p.x  ,
+                if(pickID>=0 && pickID < theLattice.getFullSize()){
+                    theLattice.getByID(pickID).move(glm::vec2(mousePositionDelta.x/height,mousePositionDelta.y/height),m_rotationMatrix,m_scale,pickDepth); 
+                    theLattice.vao.setRow(pickID,{  theLattice.getByID(pickID).p.x  ,
                                                 theLattice.getByID(pickID).p.y  ,
                                                 theLattice.getByID(pickID).p.z }); 
-                theLattice.setMesh();
-                theLattice.VSArraytoUniform(m_program);
-                if(!theLattice.GPUwarp)theLattice.makeWarpMesh(m_mesh);
+                    theLattice.setMesh();
+                    theLattice.VSArraytoUniform(m_program);
+                    if(!theLattice.GPUwarp)theLattice.makeWarpMesh(m_mesh);
+                }
             } 
 
         }
@@ -606,8 +635,9 @@ void Application::onScroll(double xoffset, double yoffset) {
 //int Application::pickTest(float mX, float mY){
 int Application::pickTest(){
 
+int pickedID = -1;
 // Clear the back buffer
-glClearColor(0, 0, 0, 1);
+glClearColor(255, 255, 255, 1);
 glClearDepth(1);
 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -634,7 +664,17 @@ glReadPixels(m_mousePosition.x,
 m_viewportSize.y - m_mousePosition.y, 1, 1,   GL_RGBA,   GL_UNSIGNED_BYTE,   &pixel);
 glReadPixels(m_mousePosition.x,
 m_viewportSize.y - m_mousePosition.y, 1, 1,   GL_DEPTH_BUFFER_BIT,   GL_FLOAT,   &pickDepth);
-int pickedID = pixel[0]; // Use this to select vertex
+
+if (!(pixel[0]==255) || !(pixel[1]==255) || !(pixel[2]==255) ){
+
+    pickedID = pixel[0] + pixel[1]*256 + pixel[2]*256*256;
+
+    
+    printf("RED %i\n", pixel[0]);
+    printf("GREEN %i\n", pixel[1]);
+    printf("BLUE %i\n", pixel[2]);
+
+}
 
 m_program.use();
 

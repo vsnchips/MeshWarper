@@ -2,8 +2,8 @@
 
 #pragma once
 
-#define MAX_LATTICE_VS_ARRAYSIZE 960
-#define MAX_MESHARRAYSIZE 960
+#define MAX_LATTICE_VS_ARRAYSIZE 1000
+#define MAX_MESHARRAYSIZE 1000
 #define MAX_SPLINESIZE 20
 
 #include <algorithm>
@@ -44,6 +44,7 @@ public:
 	cgra::Mesh * nodeMesh;
 
 	glm::mat4 myTransform;
+
 
 	void draw();
     void setID(int id);
@@ -86,6 +87,7 @@ class Lattice {
 
 	glm::vec3 m_min;
 	glm::vec3 m_max;
+	glm::vec3 span;
 	glm::vec3 m_resolution;
 	
 	cgra::Mesh latticeMesh;
@@ -94,9 +96,11 @@ class Lattice {
 	cgra::Program latProgram;
 
 	int techID;
-	bool GPUwarp;
+	bool GPUwarp = true;
 
-	bool showEnds = true;
+	//GUI stuff
+	bool showEnds = false;
+	float handleSize;
 
     Lattice();
 
@@ -107,6 +111,8 @@ class Lattice {
     LatticeNode &getByID(int id);
 
 	void setMesh();
+
+	int getFullSize();
 
 	//cgra::mesh result(cgra:mesh before); 
 

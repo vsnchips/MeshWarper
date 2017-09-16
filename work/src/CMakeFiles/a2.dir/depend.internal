@@ -439,6 +439,8 @@ src/CMakeFiles/a2.dir/lattice.cpp.o
  vendor/glm/glm/glm.hpp
  vendor/glm/glm/gtc/constants.hpp
  vendor/glm/glm/gtc/constants.inl
+ vendor/glm/glm/gtc/integer.hpp
+ vendor/glm/glm/gtc/integer.inl
  vendor/glm/glm/gtc/matrix_inverse.hpp
  vendor/glm/glm/gtc/matrix_inverse.inl
  vendor/glm/glm/gtc/matrix_transform.hpp

@@ -438,6 +438,8 @@ src/CMakeFiles/a2.dir/lattice.cpp.o: vendor/glm/glm/geometric.hpp
 src/CMakeFiles/a2.dir/lattice.cpp.o: vendor/glm/glm/glm.hpp
 src/CMakeFiles/a2.dir/lattice.cpp.o: vendor/glm/glm/gtc/constants.hpp
 src/CMakeFiles/a2.dir/lattice.cpp.o: vendor/glm/glm/gtc/constants.inl
+src/CMakeFiles/a2.dir/lattice.cpp.o: vendor/glm/glm/gtc/integer.hpp
+src/CMakeFiles/a2.dir/lattice.cpp.o: vendor/glm/glm/gtc/integer.inl
 src/CMakeFiles/a2.dir/lattice.cpp.o: vendor/glm/glm/gtc/matrix_inverse.hpp
 src/CMakeFiles/a2.dir/lattice.cpp.o: vendor/glm/glm/gtc/matrix_inverse.inl
 src/CMakeFiles/a2.dir/lattice.cpp.o: vendor/glm/glm/gtc/matrix_transform.hpp

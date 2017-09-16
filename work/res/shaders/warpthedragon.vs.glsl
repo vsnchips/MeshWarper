@@ -2,7 +2,7 @@
 #pragma glsl
 #pragma target 3.0
 
-#define MAX_MESHARRAYSIZE 960
+#define MAX_MESHARRAYSIZE 1000
 #define MAX_SPLINESIZE 20
 
 uniform mat4 modelMat;
@@ -79,12 +79,12 @@ vec3 CatMullRom(float t,vec3 spline[MAX_SPLINESIZE], int segments){
 
 vec3 spline(float t,vec3 spline[MAX_SPLINESIZE], int res){
 	
-	//if (uTechID == 2 )
+	if (uTechID == 2 )
 	{
 		return CatMullRom(t, spline, res -3);
 	}
 
-	//if (uTechID == 1)// Bezier;
+	if (uTechID == 1)// Bezier;
 		return deCasteljau(t,spline,res);
 
 
@@ -108,7 +108,7 @@ vec3 pointfromVolume(vec3 t, int xr, int yr, int zr) {
 	vec3 volumeSpline[MAX_SPLINESIZE];
 	
 	int s = 0;
-	//if (uTechID==2)
+	if (uTechID==2)
 	{ s=-1; xr+=2; yr+=2; zr+=2;}
 	
 	for (int i = s; i < xr+s; i++){         // X AXIS
@@ -136,7 +136,7 @@ void main() {
 
 	vec3 span = meshmax-meshorigin;
 
-	vec3 sample = 0.99*(vertPosition-meshorigin)/span;
+	vec3 sample = (vertPosition-meshorigin)/span;
 	//sample = (vertPosition-meshorigin)/15;
 
 	//vec3 dimension = vec(xsize,ysize,zsize);

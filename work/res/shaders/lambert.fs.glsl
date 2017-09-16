@@ -1,7 +1,7 @@
 
 #version 150 core
 
-uniform int gColor;
+uniform vec4 gColor;
 
 out vec4 color;
 
@@ -18,8 +18,8 @@ const float shininess = 16.0;
 
 void main() {
 	// for picking-selection
-	if ( gColor >= 0 ) {
-		color = vec4(gColor/255.0, 0, 0, 1.0);
+	if ( !(gColor.r==255) || !(gColor.g==255) || !(gColor.b==255)  ) {
+		color = vec4(gColor.r/255.0, gColor.g/255.0, gColor.b/255.0, 1.0);
 		return;
 	}
 
