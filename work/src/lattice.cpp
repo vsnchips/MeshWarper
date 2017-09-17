@@ -28,7 +28,7 @@ latProgram.setViewMatrix(viewMatrix);
 
 span = glm::vec3(max.x-min.x,max.y-min.y,max.z-min.z);
 
-handleSize = glm::length(span)*0.1;
+handleSize = 0.5*glm::length(span)/(glm::max(glm::max(m_resolution.x,m_resolution.y),m_resolution.z)+10);
 
 printf("constructing mesh with x: %f y %f z: %f\n", res.x+2, res.y+2, res.z+2 );
 int ind = 0;
@@ -253,23 +253,17 @@ void Lattice::draw(cgra::Program useProgram,glm::mat4 modTransform,glm::mat4 rot
 
 		if (!m_nodes[i].isEnd||showEnds)
 		{
-    glm::mat4 markerTransform(1.0f);
-
 
 		glm::vec3 p = m_nodes[i].p;
-		glm::vec4 tp = glm::vec4(1.3*p.x*m_scale,1.3*p.y*m_scale,1.3*p.z*m_scale,1.);
-		//glm::vec4 tp = glm::vec4(p.x,p.y,p.z,1.);
+		glm::vec4 tp = glm::vec4(p.x,p.y,p.z,1.);		//Transform pipeline
 	
 		glm::mat4 nodeTransform(1.0f);
-
-	markerTransform *= modelTrans;
-	markerTransform *= glm::scale(markerTransform,glm::vec3(1));
-
-		tp = rotMat * tp;
-		nodeTransform *= glm::translate(glm::mat4(1),glm::vec3(tp.x,tp.y,tp.z));
-		nodeTransform *= glm::scale(markerTransform,glm::vec3(handleSize));
+    	glm::mat4 markerTransform(1.0f);
 
 		nodeTransform*=modTransform;
+		nodeTransform *= glm::translate(glm::mat4(1.),glm::vec3(tp.x,tp.y,tp.z));
+		nodeTransform *= glm::scale(glm::mat4(1.),glm::vec3(handleSize));
+
    		useProgram.setModelMatrix(nodeTransform);
 
     	m_nodes[i].draw();
@@ -293,23 +287,17 @@ void Lattice::drawForPick(cgra::Program useProgram,glm::mat4 modTransform,glm::m
 
 		if (!m_nodes[i].isEnd||showEnds)
 		{
-    glm::mat4 markerTransform(1.0f);
 
-
-		glm::vec3 p = m_nodes[i].p;
-		glm::vec4 tp = glm::vec4(1.3*p.x*m_scale,1.3*p.y*m_scale,1.3*p.z*m_scale,1.);
-		//glm::vec4 tp = glm::vec4(p.x,p.y,p.z,1.);
+		glm::vec3 p = m_nodes[i].p;							//Transform pipeline
+		glm::vec4 tp = glm::vec4(p.x,p.y,p.z,1.);
 	
 		glm::mat4 nodeTransform(1.0f);
-
-	markerTransform *= modelTrans;
-	markerTransform *= glm::scale(markerTransform,glm::vec3(1));
-
-		tp = rotMat * tp;
-		nodeTransform *= glm::translate(glm::mat4(1),glm::vec3(tp.x,tp.y,tp.z));
-		nodeTransform *= glm::scale(markerTransform,glm::vec3(handleSize));
+    	glm::mat4 markerTransform(1.0f);
 
 		nodeTransform*=modTransform;
+		nodeTransform *= glm::translate(glm::mat4(1.),glm::vec3(tp.x,tp.y,tp.z));
+		nodeTransform *= glm::scale(glm::mat4(1.),glm::vec3(handleSize));
+
    		useProgram.setModelMatrix(nodeTransform);
 
 //Color Picking

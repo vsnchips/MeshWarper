@@ -54,7 +54,6 @@ void Application::init() {
 
     // Create the cube mesh
     createCube();
-    generate_Lattice();
 
     //Load the sphereobj;
     loadObj("res/models/sphere.obj",m_spheremesh);
@@ -117,6 +116,8 @@ void Application::createCube() {
     m_mesh.maxdist = sqrt(3);
     m_mesh.setData(vertices, triangles);
     generate_Lattice();
+
+    theLattice.VSArraytoUniform(m_program);
 }
 
 void Application::loadObj(const char *filename,cgra::Mesh &targetMesh) {
@@ -252,6 +253,7 @@ void Application::generate_Lattice(){
             //printf("Found min/max\n Min: %f %f %f \n Max: %f %f %f", min.x, min.y, min.z, max.x, max.y, max.z);
 
             theLattice = Lattice(min,max, glm::vec3(lx,ly,lz),m_spheremesh);
+            theLattice.setMesh();
 
             //printf("x: %f y %f z: %f\n", theLattice.m_resolution.x, theLattice.m_resolution.y, theLattice.m_resolution.z);
 }
@@ -399,6 +401,8 @@ void Application::doGUI() {
             printf("Loading %s \n", path);
 
             loadObj(path,m_mesh);
+            generate_Lattice();
+    theLattice.VSArraytoUniform(m_program);
         
      } //endif loading
     }
@@ -414,6 +418,7 @@ void Application::doGUI() {
 
             loadObj("res/models/dragon.obj",m_mesh);
             generate_Lattice();
+    theLattice.VSArraytoUniform(m_program);
         
      } //endif loading
     }//endif textinput
@@ -429,6 +434,7 @@ void Application::doGUI() {
 
             loadObj("res/models/bunny.obj",m_mesh);
             generate_Lattice();
+    theLattice.VSArraytoUniform(m_program);
         
      } //endif loading
     }//endif textinput
@@ -680,6 +686,7 @@ m_program.use();
 
 //glfwSwapBuffers(m_window);
 printf("Picked id %d\n", pickedID );
+printf("Picked pickDepth %f\n", pickDepth );
 return pickedID;
 
 }
